@@ -13,7 +13,7 @@ Set-StrictMode -Version 2.0
 
 # ------------------------------------------------------------------ constants
 $script:AppName    = 'WinForge'
-$script:Version    = '1.2.0'
+$script:Version    = '1.2.1'
 $script:IsWin      = ($env:OS -eq 'Windows_NT')
 $script:RootDir    = Split-Path -Parent $PSScriptRoot
 $script:DataDir    = if ($script:IsWin) { Join-Path $env:ProgramData $script:AppName } else { Join-Path $HOME ".$($script:AppName.ToLower())" }
@@ -570,6 +570,8 @@ function Restore-ForgeJournal {
     if ($TweakId) { $tweaks = @($tweaks | Where-Object { $_.id -eq $TweakId }) }
     [array]::Reverse($tweaks)
     $count = 0
+    $touchesDefault = @($tweaks | ForEach-Object { $_.entries } | Where-Object { $_.PSObject.Properties['path'] -and "$($_.path)" -like 'HKU:\WinForgeDefault\*' }).Count -gt 0
+    if ($touchesDefault -and -not $script:DryRun) { Mount-DefaultUserHive | Out-Null }
     foreach ($t in $tweaks) {
         Write-ForgeLog "Reverting $($t.id)" -Level Step
         $entries = @($t.entries); [array]::Reverse($entries)
@@ -590,6 +592,7 @@ function Restore-ForgeJournal {
             } catch { Write-ForgeLog "undo failed for $($e.type) $($e.name): $($_.Exception.Message)" -Level Warn }
         }
     }
+    if ($touchesDefault) { Dismount-DefaultUserHive }
     Write-ForgeLog "Reverted $count change(s) from $($j.id)" -Level Ok
     return $count
 }

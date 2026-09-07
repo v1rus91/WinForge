@@ -18,7 +18,7 @@ function Set-ForgePersistState {
 }
 
 function Register-ForgePersist {
-    <# Registers a SYSTEM scheduled task that runs `WinForge.ps1 -Reapply -Silent` 2 min after logon and daily. #>
+    <# Registers a scheduled task (current user, elevated) that runs `WinForge.ps1 -Reapply -Silent` 2 min after logon and daily. #>
     param([Parameter(Mandatory)][string[]]$Ids, [string]$Profile = '')
     if ($env:OS -ne 'Windows_NT') { return $false }
     Set-ForgePersistState -Ids $Ids -Profile $Profile
@@ -27,7 +27,9 @@ function Register-ForgePersist {
     $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument $arg
     $t1 = New-ScheduledTaskTrigger -AtLogOn; $t1.Delay = 'PT2M'
     $t2 = New-ScheduledTaskTrigger -Daily -At '12:00'
-    $principal = New-ScheduledTaskPrincipal -UserId 'SYSTEM' -RunLevel Highest
+    # Run as the interactive user (not SYSTEM) so HKCU tweaks land in the right profile; elevated via RunLevel Highest.
+    $user = [Security.Principal.WindowsIdentity]::GetCurrent().Name
+    $principal = New-ScheduledTaskPrincipal -UserId $user -LogonType Interactive -RunLevel Highest
     $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -ExecutionTimeLimit (New-TimeSpan -Minutes 20)
     Register-ScheduledTask -TaskName $script:PersistTaskName -Action $action -Trigger @($t1, $t2) -Principal $principal -Settings $settings -Force | Out-Null
     Write-ForgeLog "Persist watchdog registered for $($Ids.Count) tweak(s)" -Level Ok

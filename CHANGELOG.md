@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.1 — 2026-09-07
+- Fix: Persist watchdog now runs as the interactive user (elevated) instead of SYSTEM, so HKCU tweaks are re-applied to the right profile.
+- Fix: reverting a journal that touched the Default-user hive mounts/unmounts the hive.
+- GUI: hovering a tweak card shows the exact registry keys, services, tasks and commands it will run.
+
 ## 1.2.0 — 2026-09-07
 - New profile **gaming-laptop** (47 tweaks) and two laptop tweaks: AC-only gaming power settings
   (PCIe ASPM, boost Aggressive, USB suspend, Wi-Fi max performance) and adaptive brightness off (power plan + Intel CABC).

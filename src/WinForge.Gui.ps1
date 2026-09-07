@@ -115,7 +115,8 @@ $script:Xaml = @'
       </Setter>
     </Style>
     <DataTemplate x:Key="TweakCard">
-      <Border Background="{StaticResource Card}" BorderBrush="{StaticResource Border}" BorderThickness="1" CornerRadius="10" Margin="0,0,0,8" Padding="14,10" Opacity="{Binding Opacity}">
+      <Border Background="{StaticResource Card}" BorderBrush="{StaticResource Border}" BorderThickness="1" CornerRadius="10" Margin="0,0,0,8" Padding="14,10" Opacity="{Binding Opacity}" ToolTipService.ShowDuration="60000">
+        <Border.ToolTip><ToolTip Background="#0B0D13" Foreground="#E6E8EF" BorderBrush="#2A2F45" MaxWidth="820"><TextBlock Text="{Binding Details}" FontFamily="Consolas" FontSize="11" TextWrapping="Wrap"/></ToolTip></Border.ToolTip>
         <Grid>
           <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
           <CheckBox Grid.Column="0" IsChecked="{Binding Selected, Mode=TwoWay}" IsEnabled="{Binding Applicable}" VerticalAlignment="Top" Margin="0,3,12,0"/>
@@ -464,8 +465,22 @@ function Start-ForgeGui {
         if ($t.PSObject.Properties['reversible'] -and $t.reversible -eq $false) { $badges += '⚠ not reversible' }
         if ($t.PSObject.Properties['minBuild'] -and $t.minBuild) { $badges += "build $($t.minBuild)+" }
         if ($t.PSObject.Properties['tags'] -and $t.tags -contains 'recommended') { $badges += '★ recommended' }
+        $details = foreach ($a in $t.actions) {
+            switch ($a.type) {
+                'registry'          { "reg   $($a.path)!$($a.name) = $($a.value)" }
+                'registryDelete'    { "reg   delete $($a.path)!$($a.name)" }
+                'registryDeleteKey' { "reg   delete key $($a.path)" }
+                'service'           { "svc   $($a.name) -> $(if ($a.PSObject.Properties['startup']) { $a.startup } else { 'Disabled' })" }
+                'task'              { "task  $($a.path)$($a.name) -> disabled" }
+                'appx'              { "appx  remove $($a.name)" }
+                'feature'           { "dism  feature $($a.name) -> $($a.state)" }
+                'capability'        { "dism  capability $($a.name) -> $($a.state)" }
+                default             { $line = ($a.apply -replace '\s+', ' '); "$($a.type.PadRight(5)) $(if ($line.Length -gt 160) { $line.Substring(0, 160) + '…' } else { $line })" }
+            }
+        }
         [PSCustomObject]@{
             Id = $t.id; Category = $t.category; Name = (Get-LocalizedText $t.name); Description = (Get-LocalizedText $t.description)
+            Details = ("$($t.id)`n" + ($details -join "`n"))
             Risk = $t.risk; RiskText = (Get-ForgeString "risk.$($t.risk)").ToUpper(); RiskBrush = $brush[$t.risk]
             State = 'Unknown'; StateBrush = $brush.Unknown; StateText = (Get-ForgeString 'state.unknown')
             Selected = $false; Applicable = $ok; Reason = $reason; Opacity = $(if ($ok) { 1.0 } else { 0.5 }); Badges = ($badges -join '   ')
