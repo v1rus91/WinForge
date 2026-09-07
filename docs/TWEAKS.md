@@ -1,6 +1,6 @@
 # WinForge tweak catalog
 
-_Generated 2026-09-07 from catalog/*.json — 156 tweaks. Do not edit by hand._
+_Generated 2026-09-07 from catalog/*.json — 158 tweaks. Do not edit by hand._
 
 Legend: **safe** = no functionality loss · **moderate** = read the description · **advanced** = opt-in, never part of a profile, never counted in the score. `⟳` needs reboot · `✖` not reversible (package removal) · `build N+` minimum Windows build.
 
@@ -95,7 +95,7 @@ Legend: **safe** = no functionality loss · **moderate** = read the description 
 | `gaming.dynamic-tick-off` | **Disable dynamic tick & platform clock (bcdedit)**<br><sub>Legacy timer tweak for frame-time consistency. Can hurt laptops and some 24H2 systems; test before keeping.</sub> | advanced | ⟳ | 2× command |
 | `gaming.timer-resolution` | **Global high-resolution timer (0.5 ms for every app)**<br><sub>Since Windows 10 2004 the timer resolution is per-process and background apps get coarse timers; this restores the global behaviour so games and their launchers/overlays all run on the finest timer. Slightly higher idle power.</sub> | moderate | ⟳ build 22000+ | 1× registry |
 | `gaming.memory-tuning` | **Memory: no compression/page combining, kernel stays in RAM**<br><sub>Disables memory compression and page combining (spare CPU cycles on 16 GB+ desktops) and sets DisablePagingExecutive so kernel code is never paged out. Not for 8 GB machines.</sub> | moderate | ⟳ | 1× powershell, 1× registry |
-| `gaming.nic-power-off` | **Network adapter: disable power saving & 'turn off to save power'**<br><sub>Stops Windows from putting the Ethernet/Wi-Fi adapter into low-power states that cause lag spikes and packet loss after idle. Applied to every connected physical adapter.</sub> | safe | ★ | 1× powershell |
+| `gaming.nic-power-off` | **Network adapter: disable power saving & 'turn off to save power'**<br><sub>Stops Windows from putting the Ethernet/Wi-Fi adapter into low-power states that cause lag spikes and packet loss after idle. Applied to every connected physical adapter.</sub> | safe |  | 1× powershell |
 | `gaming.mouse-keyboard-queue` | **Smaller mouse/keyboard driver queues**<br><sub>MouseDataQueueSize / KeyboardDataQueueSize 20 instead of 100: input is flushed to the game sooner under heavy load. Marginal but free; used by most competitive setups.</sub> | moderate | ⟳ | 2× registry |
 | `gaming.audio-ducking-off` | **Don't lower game volume when Discord/voice chat is active**<br><sub>Sets the communications 'Do nothing' option so Windows never ducks other audio by 80 % during calls.</sub> | safe | ★ | 1× registry |
 | `gaming.defender-low-impact` | **Defender: low-impact scans (20 % CPU cap, only when idle)**<br><sub>Keeps real-time protection but caps scheduled scans at 20 % CPU, runs them only when the PC is idle and skips catch-up quick scans after boot.</sub> | safe | ★ | 1× powershell |
@@ -202,7 +202,7 @@ Legend: **safe** = no functionality loss · **moderate** = read the description 
 | `sec.rdp-file-warning-off` | **Suppress the .rdp file security warning dialog**<br><sub>For people who open saved RDP connections many times a day.</sub> | moderate |  | 2× registry |
 | `sec.exe-launch-warning-off` | **Disable 'Open File - Security Warning' for downloads**<br><sub>Stops zone-identifier (Mark of the Web) prompts. SmartScreen still checks executables.</sub> | advanced |  | 2× registry |
 
-## 🔋 power (8)
+## 🔋 power (10)
 
 | id | tweak | risk | notes | what it touches |
 |---|---|---|---|---|
@@ -214,6 +214,8 @@ Legend: **safe** = no functionality loss · **moderate** = read the description 
 | `power.modern-standby-network-off` | **Disconnect network during Modern Standby (laptops)**<br><sub>Stops the laptop from waking, downloading and draining the battery in your bag.</sub> | safe |  | 2× registry |
 | `power.cpu-unpark` | **Unlock & disable CPU core parking (current plan)**<br><sub>Sets minimum unparked cores to 100 % so all cores stay ready. Higher idle power on laptops.</sub> | moderate |  | 1× command |
 | `power.desktop-max` | **Desktop power: PCIe ASPM off, USB3 LPM off, disks never sleep, CPU min 100 %, boost Aggressive**<br><sub>Five hidden power-plan settings that cause hitching on desktops: PCI Express link power management, USB 3 link power management, hard-disk sleep, minimum processor state and the turbo-boost policy. Applied to the active plan. Do not use on laptops.</sub> | moderate |  | 5× command |
+| `power.laptop-gaming-ac` | **Laptop gaming (plugged in only): PCIe ASPM off, boost Aggressive, USB suspend off, Wi-Fi max performance**<br><sub>Changes only the AC (plugged-in) side of the active power plan, so battery behaviour stays untouched: PCI Express link power management off, turbo-boost policy Aggressive, USB selective suspend off, wireless adapter power saving off. Expect more heat and fan noise while gaming on mains.</sub> | moderate |  | 4× command |
+| `power.adaptive-brightness-off` | **Disable adaptive brightness (ambient sensor & content-based dimming)**<br><sub>Stops the panel from dimming dark game scenes: power-plan adaptive brightness off on AC and battery, plus the Intel CABC content-adaptive dimming override.</sub> | safe |  | 1× command, 1× powershell |
 
 ## 🧪 advanced (10)
 
@@ -232,11 +234,11 @@ Legend: **safe** = no functionality loss · **moderate** = read the description 
 
 ## Profiles
 
-### ⚖️ Balanced (recommended) (`balanced`, 28 tweaks)
+### ⚖️ Balanced (recommended) (`balanced`, 27 tweaks)
 
 Everything tagged 'recommended': telemetry off, ads gone, junk apps removed, Copilot/Recall off, sane defaults. Zero functionality loss.
 
-`privacy.telemetry` · `privacy.advertising-id` · `ai.copilot` · `ai.recall` · `bloat.ms-junk` · `bloat.third-party` · `bloat.widgets` · `bloat.consumer-features` · `perf.multimedia-profile` · `gaming.game-dvr-off` · `gaming.nic-power-off` · `gaming.audio-ducking-off` · `gaming.defender-low-impact` · `svc.safe-manual` · `ui.classic-context-menu` · `ui.end-task` · `ui.start-no-recommended` · `ui.notifications-quiet` · `explorer.show-extensions` · `explorer.search-no-bing` · `edge.no-ads` · `edge.no-telemetry` · `updates.no-auto-reboot` · `updates.no-feature-asap` · `updates.delivery-optimization-off` · `net.smb1-off` · `sec.wpbt-off` · `power.fast-startup-off`
+`privacy.telemetry` · `privacy.advertising-id` · `ai.copilot` · `ai.recall` · `bloat.ms-junk` · `bloat.third-party` · `bloat.widgets` · `bloat.consumer-features` · `perf.multimedia-profile` · `gaming.game-dvr-off` · `gaming.audio-ducking-off` · `gaming.defender-low-impact` · `svc.safe-manual` · `ui.classic-context-menu` · `ui.end-task` · `ui.start-no-recommended` · `ui.notifications-quiet` · `explorer.show-extensions` · `explorer.search-no-bing` · `edge.no-ads` · `edge.no-telemetry` · `updates.no-auto-reboot` · `updates.no-feature-asap` · `updates.delivery-optimization-off` · `net.smb1-off` · `sec.wpbt-off` · `power.fast-startup-off`
 
 ### 🔒 Privacy Max (`privacy`, 38 tweaks)
 
@@ -250,27 +252,33 @@ Balanced + Game DVR off, HAGS, windowed optimisations, no mouse accel, multimedi
 
 `privacy.telemetry` · `privacy.advertising-id` · `ai.copilot` · `ai.recall` · `bloat.ms-junk` · `bloat.third-party` · `bloat.widgets` · `bloat.consumer-features` · `perf.visual-effects` · `perf.foreground-priority` · `perf.multimedia-profile` · `perf.power-throttling-off` · `gaming.game-mode` · `gaming.hags` · `gaming.windowed-optimizations` · `gaming.game-dvr-off` · `gaming.gamebar-popups` · `gaming.mouse-acceleration-off` · `gaming.keyboard-repeat` · `gaming.sticky-keys-off` · `gaming.timer-resolution` · `gaming.memory-tuning` · `gaming.nic-power-off` · `gaming.mouse-keyboard-queue` · `gaming.audio-ducking-off` · `gaming.defender-low-impact` · `svc.safe-manual` · `ui.classic-context-menu` · `ui.end-task` · `ui.start-no-recommended` · `ui.notifications-quiet` · `explorer.show-extensions` · `explorer.search-no-bing` · `edge.no-ads` · `edge.no-telemetry` · `updates.no-auto-reboot` · `updates.no-feature-asap` · `updates.no-drivers` · `updates.delivery-optimization-off` · `net.tcp-tuning` · `net.nagle-off` · `net.smb1-off` · `sec.wpbt-off` · `power.ultimate-plan` · `power.fast-startup-off` · `power.usb-selective-suspend-off`
 
-### 🧹 Minimal / Debloat (`minimal`, 42 tweaks)
+### 🧹 Minimal / Debloat (`minimal`, 41 tweaks)
 
 Strip Windows down: all bloatware sets incl. Xbox, Teams, OneDrive, optional inbox apps; services to manual; search indexer off; Edge ads/telemetry off.
 
-`privacy.telemetry` · `privacy.advertising-id` · `ai.copilot` · `ai.recall` · `bloat.ms-junk` · `bloat.third-party` · `bloat.oem` · `bloat.xbox` · `bloat.teams-outlook` · `bloat.widgets` · `bloat.cross-device` · `bloat.onedrive` · `bloat.optional-apps` · `bloat.consumer-features` · `perf.multimedia-profile` · `perf.sysmain` · `perf.search-indexer` · `gaming.game-dvr-off` · `gaming.nic-power-off` · `gaming.audio-ducking-off` · `gaming.defender-low-impact` · `svc.safe-manual` · `svc.diagnostics` · `svc.hyperv` · `svc.edge-update` · `svc.maintenance-tasks` · `ui.classic-context-menu` · `ui.hide-taskview-chat` · `ui.end-task` · `ui.start-no-recommended` · `ui.notifications-quiet` · `explorer.show-extensions` · `explorer.hide-home-gallery` · `explorer.search-no-bing` · `edge.no-ads` · `edge.no-telemetry` · `updates.no-auto-reboot` · `updates.no-feature-asap` · `updates.delivery-optimization-off` · `net.smb1-off` · `sec.wpbt-off` · `power.fast-startup-off`
+`privacy.telemetry` · `privacy.advertising-id` · `ai.copilot` · `ai.recall` · `bloat.ms-junk` · `bloat.third-party` · `bloat.oem` · `bloat.xbox` · `bloat.teams-outlook` · `bloat.widgets` · `bloat.cross-device` · `bloat.onedrive` · `bloat.optional-apps` · `bloat.consumer-features` · `perf.multimedia-profile` · `perf.sysmain` · `perf.search-indexer` · `gaming.game-dvr-off` · `gaming.audio-ducking-off` · `gaming.defender-low-impact` · `svc.safe-manual` · `svc.diagnostics` · `svc.hyperv` · `svc.edge-update` · `svc.maintenance-tasks` · `ui.classic-context-menu` · `ui.hide-taskview-chat` · `ui.end-task` · `ui.start-no-recommended` · `ui.notifications-quiet` · `explorer.show-extensions` · `explorer.hide-home-gallery` · `explorer.search-no-bing` · `edge.no-ads` · `edge.no-telemetry` · `updates.no-auto-reboot` · `updates.no-feature-asap` · `updates.delivery-optimization-off` · `net.smb1-off` · `sec.wpbt-off` · `power.fast-startup-off`
 
-### 💻 Developer (`developer`, 38 tweaks)
+### 💻 Developer (`developer`, 37 tweaks)
 
 Balanced + dev mode, long paths, WSL2, Sandbox, verbose boot, detailed BSOD, extensions shown, classic context menu, no auto-reboot, fast timeouts.
 
-`privacy.telemetry` · `privacy.advertising-id` · `ai.copilot` · `ai.recall` · `bloat.ms-junk` · `bloat.third-party` · `bloat.widgets` · `bloat.consumer-features` · `perf.menu-delay` · `perf.multimedia-profile` · `perf.app-timeouts` · `gaming.game-dvr-off` · `gaming.nic-power-off` · `gaming.audio-ducking-off` · `gaming.defender-low-impact` · `svc.safe-manual` · `ui.classic-context-menu` · `ui.end-task` · `ui.start-no-recommended` · `ui.notifications-quiet` · `ui.verbose-logon` · `ui.detailed-bsod` · `explorer.show-extensions` · `explorer.open-this-pc` · `explorer.copy-move-to` · `explorer.search-no-bing` · `edge.no-ads` · `edge.no-telemetry` · `updates.no-auto-reboot` · `updates.no-feature-asap` · `updates.delivery-optimization-off` · `net.smb1-off` · `sec.wpbt-off` · `power.fast-startup-off` · `adv.crash-dump-small` · `adv.windows-sandbox` · `adv.wsl` · `adv.dev-mode`
+`privacy.telemetry` · `privacy.advertising-id` · `ai.copilot` · `ai.recall` · `bloat.ms-junk` · `bloat.third-party` · `bloat.widgets` · `bloat.consumer-features` · `perf.menu-delay` · `perf.multimedia-profile` · `perf.app-timeouts` · `gaming.game-dvr-off` · `gaming.audio-ducking-off` · `gaming.defender-low-impact` · `svc.safe-manual` · `ui.classic-context-menu` · `ui.end-task` · `ui.start-no-recommended` · `ui.notifications-quiet` · `ui.verbose-logon` · `ui.detailed-bsod` · `explorer.show-extensions` · `explorer.open-this-pc` · `explorer.copy-move-to` · `explorer.search-no-bing` · `edge.no-ads` · `edge.no-telemetry` · `updates.no-auto-reboot` · `updates.no-feature-asap` · `updates.delivery-optimization-off` · `net.smb1-off` · `sec.wpbt-off` · `power.fast-startup-off` · `adv.crash-dump-small` · `adv.windows-sandbox` · `adv.wsl` · `adv.dev-mode`
 
-### 🔋 Laptop / Battery (`laptop`, 33 tweaks)
+### 🔋 Laptop / Battery (`laptop`, 32 tweaks)
 
 Balanced + background apps off, Modern Standby network off, reduced effects, safe services to manual. Never touches power throttling or the Ultimate plan.
 
-`privacy.telemetry` · `privacy.advertising-id` · `ai.copilot` · `ai.recall` · `bloat.ms-junk` · `bloat.third-party` · `bloat.widgets` · `bloat.consumer-features` · `perf.visual-effects` · `perf.multimedia-profile` · `perf.background-apps` · `gaming.game-dvr-off` · `gaming.nic-power-off` · `gaming.audio-ducking-off` · `gaming.defender-low-impact` · `svc.safe-manual` · `svc.hyperv` · `ui.classic-context-menu` · `ui.end-task` · `ui.start-no-recommended` · `ui.notifications-quiet` · `explorer.show-extensions` · `explorer.search-no-bing` · `edge.no-ads` · `edge.no-telemetry` · `updates.no-auto-reboot` · `updates.no-feature-asap` · `updates.delivery-optimization-off` · `net.smb1-off` · `sec.wpbt-off` · `sec.bitlocker-auto-off` · `power.fast-startup-off` · `power.modern-standby-network-off`
+`privacy.telemetry` · `privacy.advertising-id` · `ai.copilot` · `ai.recall` · `bloat.ms-junk` · `bloat.third-party` · `bloat.widgets` · `bloat.consumer-features` · `perf.visual-effects` · `perf.multimedia-profile` · `perf.background-apps` · `gaming.game-dvr-off` · `gaming.audio-ducking-off` · `gaming.defender-low-impact` · `svc.safe-manual` · `svc.hyperv` · `ui.classic-context-menu` · `ui.end-task` · `ui.start-no-recommended` · `ui.notifications-quiet` · `explorer.show-extensions` · `explorer.search-no-bing` · `edge.no-ads` · `edge.no-telemetry` · `updates.no-auto-reboot` · `updates.no-feature-asap` · `updates.delivery-optimization-off` · `net.smb1-off` · `sec.wpbt-off` · `sec.bitlocker-auto-off` · `power.fast-startup-off` · `power.modern-standby-network-off`
 
 ### 🖥️ Gaming Desktop Max (`gaming-desktop`, 52 tweaks)
 
 Everything in Gaming plus desktop-only power and latency work: PCIe/USB3/disk power saving off, CPU min 100 % + aggressive boost, no NIC power saving, global 0.5 ms timer, memory compression off, MPO off, no audio ducking, low-impact Defender, QoS reserve 0, Hyper-V guest services off. Advanced tweaks (MSI mode, NIC low-latency, hypervisor off) stay opt-in.
 
 `privacy.telemetry` · `privacy.advertising-id` · `ai.copilot` · `ai.recall` · `bloat.ms-junk` · `bloat.third-party` · `bloat.widgets` · `bloat.consumer-features` · `perf.visual-effects` · `perf.foreground-priority` · `perf.multimedia-profile` · `perf.power-throttling-off` · `gaming.game-mode` · `gaming.hags` · `gaming.windowed-optimizations` · `gaming.game-dvr-off` · `gaming.gamebar-popups` · `gaming.mouse-acceleration-off` · `gaming.keyboard-repeat` · `gaming.sticky-keys-off` · `gaming.mpo-off` · `gaming.timer-resolution` · `gaming.memory-tuning` · `gaming.nic-power-off` · `gaming.mouse-keyboard-queue` · `gaming.audio-ducking-off` · `gaming.defender-low-impact` · `svc.safe-manual` · `svc.diagnostics` · `svc.hyperv` · `ui.classic-context-menu` · `ui.end-task` · `ui.start-no-recommended` · `ui.notifications-quiet` · `explorer.show-extensions` · `explorer.search-no-bing` · `edge.no-ads` · `edge.no-telemetry` · `updates.no-auto-reboot` · `updates.no-feature-asap` · `updates.no-drivers` · `updates.delivery-optimization-off` · `net.tcp-tuning` · `net.nagle-off` · `net.smb1-off` · `net.qos-reserve-zero` · `sec.wpbt-off` · `power.ultimate-plan` · `power.fast-startup-off` · `power.usb-selective-suspend-off` · `power.cpu-unpark` · `power.desktop-max`
+
+### 💻🎮 Gaming Laptop (`gaming-laptop`, 47 tweaks)
+
+Gaming tweaks that respect a laptop: High Performance plan (not Ultimate), aggressive boost / no PCIe & USB & Wi-Fi power saving only while plugged in, adaptive brightness off, no network in Modern Standby, DVR off, HAGS, VRR, raw mouse, MMCSS, TCP tuning, low-impact Defender. Battery-side settings, power throttling, core parking and NIC power saving are left alone; MPO and memory tweaks are skipped for hybrid-graphics stability.
+
+`privacy.telemetry` · `privacy.advertising-id` · `ai.copilot` · `ai.recall` · `bloat.ms-junk` · `bloat.third-party` · `bloat.widgets` · `bloat.consumer-features` · `perf.visual-effects` · `perf.foreground-priority` · `perf.multimedia-profile` · `perf.background-apps` · `gaming.game-mode` · `gaming.hags` · `gaming.windowed-optimizations` · `gaming.game-dvr-off` · `gaming.gamebar-popups` · `gaming.mouse-acceleration-off` · `gaming.keyboard-repeat` · `gaming.sticky-keys-off` · `gaming.audio-ducking-off` · `gaming.defender-low-impact` · `svc.safe-manual` · `svc.hyperv` · `ui.classic-context-menu` · `ui.end-task` · `ui.start-no-recommended` · `ui.notifications-quiet` · `explorer.show-extensions` · `explorer.search-no-bing` · `edge.no-ads` · `edge.no-telemetry` · `updates.no-auto-reboot` · `updates.no-feature-asap` · `updates.no-drivers` · `updates.delivery-optimization-off` · `net.tcp-tuning` · `net.nagle-off` · `net.smb1-off` · `net.qos-reserve-zero` · `sec.wpbt-off` · `sec.bitlocker-auto-off` · `power.high-performance-plan` · `power.fast-startup-off` · `power.modern-standby-network-off` · `power.laptop-gaming-ac` · `power.adaptive-brightness-off`
 

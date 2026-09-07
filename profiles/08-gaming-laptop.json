@@ -1,0 +1,42 @@
+{
+  "id": "gaming-laptop",
+  "order": 8,
+  "icon": "💻🎮",
+  "name": {
+    "en": "Gaming Laptop",
+    "uk": "Ігровий ноутбук"
+  },
+  "description": {
+    "en": "Gaming tweaks that respect a laptop: High Performance plan (not Ultimate), aggressive boost / no PCIe & USB & Wi-Fi power saving only while plugged in, adaptive brightness off, no network in Modern Standby, DVR off, HAGS, VRR, raw mouse, MMCSS, TCP tuning, low-impact Defender. Battery-side settings, power throttling, core parking and NIC power saving are left alone; MPO and memory tweaks are skipped for hybrid-graphics stability.",
+    "uk": "Ігрові твіки з повагою до ноутбука: план «Висока продуктивність» (не Ultimate), агресивний буст / без енергозбереження PCIe, USB і Wi-Fi лише від мережі, без адаптивної яскравості, без мережі в Modern Standby, без DVR, HAGS, VRR, чиста миша, MMCSS, TCP-тюнінг, легкий Defender. Налаштування від батареї, Power Throttling, паркування ядер і енергозбереження мережевої карти не чіпаються; MPO і твіки пам’яті пропущено заради стабільності гібридної графіки."
+  },
+  "include": [
+    "tag:recommended",
+    "category:gaming",
+    "perf.foreground-priority",
+    "perf.multimedia-profile",
+    "perf.visual-effects",
+    "perf.background-apps",
+    "power.high-performance-plan",
+    "power.laptop-gaming-ac",
+    "power.adaptive-brightness-off",
+    "power.modern-standby-network-off",
+    "updates.no-drivers",
+    "net.tcp-tuning",
+    "net.nagle-off",
+    "net.qos-reserve-zero",
+    "svc.safe-manual",
+    "svc.hyperv",
+    "sec.bitlocker-auto-off"
+  ],
+  "exclude": [
+    "risk:advanced",
+    "gaming.fullscreen-optimizations-off",
+    "gaming.mpo-off",
+    "gaming.memory-tuning",
+    "gaming.timer-resolution",
+    "gaming.nic-power-off",
+    "gaming.mouse-keyboard-queue",
+    "bloat.xbox"
+  ]
+}

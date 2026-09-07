@@ -249,6 +249,89 @@
           "pattern": "0x00000000"
         }
       ]
+    },
+    {
+      "id": "power.laptop-gaming-ac",
+      "name": {
+        "en": "Laptop gaming (plugged in only): PCIe ASPM off, boost Aggressive, USB suspend off, Wi-Fi max performance",
+        "uk": "Ігровий ноутбук (лише від мережі): без PCIe ASPM, буст Aggressive, без призупинення USB, Wi-Fi макс. продуктивність"
+      },
+      "description": {
+        "en": "Changes only the AC (plugged-in) side of the active power plan, so battery behaviour stays untouched: PCI Express link power management off, turbo-boost policy Aggressive, USB selective suspend off, wireless adapter power saving off. Expect more heat and fan noise while gaming on mains.",
+        "uk": "Змінює лише «від мережі» в активному плані, робота від батареї не змінюється: без керування живленням PCIe, політика бусту Aggressive, без вибіркового призупинення USB, без енергозбереження Wi-Fi. Очікуйте більше тепла та шуму вентиляторів під час гри від розетки."
+      },
+      "risk": "moderate",
+      "weight": 1,
+      "tags": [
+        "power",
+        "gaming",
+        "laptop"
+      ],
+      "actions": [
+        {
+          "type": "command",
+          "apply": "powercfg /setacvalueindex SCHEME_CURRENT 501a4d13-42af-4429-9fd1-a8218c268e20 ee12f906-d277-404b-b6da-e5fa1a576df5 0",
+          "revert": "powercfg /setacvalueindex SCHEME_CURRENT 501a4d13-42af-4429-9fd1-a8218c268e20 ee12f906-d277-404b-b6da-e5fa1a576df5 1"
+        },
+        {
+          "type": "command",
+          "apply": "powercfg -attributes SUB_PROCESSOR be337238-0d82-4146-a960-4f3749d470c7 -ATTRIB_HIDE && powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR be337238-0d82-4146-a960-4f3749d470c7 2",
+          "revert": "powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR be337238-0d82-4146-a960-4f3749d470c7 3"
+        },
+        {
+          "type": "command",
+          "apply": "powercfg /setacvalueindex SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0",
+          "revert": "powercfg /setacvalueindex SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 1"
+        },
+        {
+          "type": "command",
+          "apply": "powercfg /setacvalueindex SCHEME_CURRENT 19cbb8fa-5279-450e-9fac-8a3d5fedd0c1 12bbebe6-58d6-4636-95bb-3217ef867c1a 0 && powercfg /setactive SCHEME_CURRENT",
+          "revert": "powercfg /setacvalueindex SCHEME_CURRENT 19cbb8fa-5279-450e-9fac-8a3d5fedd0c1 12bbebe6-58d6-4636-95bb-3217ef867c1a 0 && powercfg /setactive SCHEME_CURRENT"
+        }
+      ],
+      "detect": [
+        {
+          "type": "commandMatch",
+          "command": "powercfg /query SCHEME_CURRENT 501a4d13-42af-4429-9fd1-a8218c268e20 ee12f906-d277-404b-b6da-e5fa1a576df5",
+          "pattern": "0x00000000"
+        }
+      ]
+    },
+    {
+      "id": "power.adaptive-brightness-off",
+      "name": {
+        "en": "Disable adaptive brightness (ambient sensor & content-based dimming)",
+        "uk": "Вимкнути адаптивну яскравість (датчик освітлення та затемнення за вмістом)"
+      },
+      "description": {
+        "en": "Stops the panel from dimming dark game scenes: power-plan adaptive brightness off on AC and battery, plus the Intel CABC content-adaptive dimming override.",
+        "uk": "Панель не затемнюватиме темні сцени в іграх: адаптивну яскравість плану живлення вимкнено від мережі й батареї, плюс вимкнення Intel CABC (затемнення за вмістом)."
+      },
+      "risk": "safe",
+      "weight": 1,
+      "tags": [
+        "display",
+        "laptop"
+      ],
+      "actions": [
+        {
+          "type": "command",
+          "apply": "powercfg /setacvalueindex SCHEME_CURRENT 7516b95f-f776-4464-8c53-06167f40cc99 fbd9aa66-9553-4097-ba44-ed6e9d65eab8 0 && powercfg /setdcvalueindex SCHEME_CURRENT 7516b95f-f776-4464-8c53-06167f40cc99 fbd9aa66-9553-4097-ba44-ed6e9d65eab8 0 && powercfg /setactive SCHEME_CURRENT",
+          "revert": "powercfg /setacvalueindex SCHEME_CURRENT 7516b95f-f776-4464-8c53-06167f40cc99 fbd9aa66-9553-4097-ba44-ed6e9d65eab8 1 && powercfg /setdcvalueindex SCHEME_CURRENT 7516b95f-f776-4464-8c53-06167f40cc99 fbd9aa66-9553-4097-ba44-ed6e9d65eab8 1 && powercfg /setactive SCHEME_CURRENT"
+        },
+        {
+          "type": "powershell",
+          "apply": "Get-ChildItem 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}' -ErrorAction SilentlyContinue | Where-Object { $_.PSChildName -match '^\\d{4}$' -and (Get-ItemProperty $_.PSPath -Name DriverDesc -ErrorAction SilentlyContinue).DriverDesc -match 'Intel' } | ForEach-Object { Set-ItemProperty $_.PSPath -Name FeatureTestControl -Value 0xF008 -Type DWord -ErrorAction SilentlyContinue }",
+          "revert": "Get-ChildItem 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}' -ErrorAction SilentlyContinue | Where-Object { $_.PSChildName -match '^\\d{4}$' } | ForEach-Object { Remove-ItemProperty $_.PSPath -Name FeatureTestControl -ErrorAction SilentlyContinue }"
+        }
+      ],
+      "detect": [
+        {
+          "type": "commandMatch",
+          "command": "powercfg /query SCHEME_CURRENT 7516b95f-f776-4464-8c53-06167f40cc99 fbd9aa66-9553-4097-ba44-ed6e9d65eab8",
+          "pattern": "0x00000000"
+        }
+      ]
     }
   ]
 }

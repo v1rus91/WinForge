@@ -57,7 +57,7 @@ Describe 'Catalog schema' {
 
 Describe 'Profiles' {
     It 'passes Test-ForgeProfiles' { Test-ForgeProfiles | Should -BeNullOrEmpty }
-    It 'has the seven built-in profiles' { $script:Profiles.id | Sort-Object | Should -Be @('balanced', 'developer', 'gaming', 'gaming-desktop', 'laptop', 'minimal', 'privacy') }
+    It 'has the eight built-in profiles' { $script:Profiles.id | Sort-Object | Should -Be @('balanced', 'developer', 'gaming', 'gaming-desktop', 'gaming-laptop', 'laptop', 'minimal', 'privacy') }
     It 'balanced contains no advanced tweaks' { (Resolve-ForgeProfile ($script:Profiles | Where-Object id -eq 'balanced') | Where-Object risk -eq 'advanced') | Should -BeNullOrEmpty }
     It 'laptop never enables Ultimate plan or power throttling off' {
         $ids = (Resolve-ForgeProfile ($script:Profiles | Where-Object id -eq 'laptop')).id
@@ -67,6 +67,11 @@ Describe 'Profiles' {
         $sel = Resolve-ForgeProfile ($script:Profiles | Where-Object id -eq 'gaming-desktop')
         ($sel | Where-Object risk -eq 'advanced') | Should -BeNullOrEmpty
         $sel.id | Should -Contain 'power.desktop-max'; $sel.id | Should -Not -Contain 'power.modern-standby-network-off'
+    }
+    It 'gaming-laptop never touches desktop-only power or battery-hostile tweaks' {
+        $ids = (Resolve-ForgeProfile ($script:Profiles | Where-Object id -eq 'gaming-laptop')).id
+        foreach ($bad in 'power.ultimate-plan', 'power.desktop-max', 'power.cpu-unpark', 'perf.power-throttling-off', 'gaming.nic-power-off', 'gaming.mpo-off') { $ids | Should -Not -Contain $bad }
+        $ids | Should -Contain 'power.laptop-gaming-ac'
     }
     It 'gaming keeps Xbox apps' { (Resolve-ForgeProfile ($script:Profiles | Where-Object id -eq 'gaming')).id | Should -Not -Contain 'bloat.xbox' }
     It 'pattern matcher supports category/risk/tag/wildcard' {

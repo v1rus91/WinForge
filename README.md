@@ -7,7 +7,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/v1rus91/WinForge/ci.yml?branch=main&label=CI)](.github/workflows/ci.yml)
 ![PowerShell 5.1+](https://img.shields.io/badge/PowerShell-5.1%20%7C%207-blue)
 ![Windows 11 22H2–25H2](https://img.shields.io/badge/Windows%2011-22H2%20→%2025H2-0078D4)
-![145 tweaks](https://img.shields.io/badge/tweaks-156-brightgreen)
+![145 tweaks](https://img.shields.io/badge/tweaks-158-brightgreen)
 ![License MIT](https://img.shields.io/badge/license-MIT-lightgrey)
 
 Privacy · AI/Copilot/Recall · Bloatware · Performance · Gaming · Services · UI · Explorer · Edge · Updates · Network · Security · Power
@@ -27,15 +27,15 @@ I studied the four most popular open-source tools — [Win11Debloat](https://git
 | No build gating — 25H2 keys on 22H2 machines, Win10 keys on 24H2 (Sparkle, RyTuneX) | Every tweak carries `minBuild` / `editions`; inapplicable ones are greyed out and skipped |
 | Dangerous defaults (kill Defender, delete DLLs, rename system EXEs, `vssadmin delete shadows /all`) | Three risk tiers; **advanced** tweaks are never in a profile, never in the score, always explicit |
 | Tweaks reset after a feature update and nobody notices | **Persist watchdog** re-applies drifted tweaks 2 min after logon |
-| Logic buried in a 3 000-line C# file or 90 dot-sourced scripts | **156 tweaks are plain JSON** — readable, diffable, testable, auditable |
+| Logic buried in a 3 000-line C# file or 90 dot-sourced scripts | **158 tweaks are plain JSON** — readable, diffable, testable, auditable |
 | Windows only, no CI | Cross-platform Pester suite + PSScriptAnalyzer + Win/Linux CI |
 
 ## Features
 
-- **156 declarative tweaks** in 14 categories with EN/UK descriptions, risk level, tags, reboot flags, build gates.
+- **158 declarative tweaks** in 14 categories with EN/UK descriptions, risk level, tags, reboot flags, build gates.
 - **Journaled undo.** `-RevertJournal last` puts things back exactly. Per-tweak revert too.
 - **WinForge Score** — three live gauges (Privacy / Performance / Clean) computed from real system state.
-- **7 profiles**: Balanced ★, Privacy Max, Gaming, Gaming Desktop Max, Minimal/Debloat, Developer, Laptop/Battery. Export your own selection as a profile and share it.
+- **8 profiles**: Balanced ★, Privacy Max, Gaming, Gaming Desktop Max, Gaming Laptop, Minimal/Debloat, Developer, Laptop/Battery. Export your own selection as a profile and share it.
 - **Three front-ends**: dark WPF GUI (never freezes — work runs in a background runspace), console TUI, and a fully silent CLI for deployment scripts.
 - **Dry run** for everything, restore point before every session, per-session logs.
 - **App remover** with the full installed/provisioned inventory and "known bloat" markers.
@@ -78,13 +78,14 @@ Selectors accepted by `-Apply` / `-Revert` and in profile files: exact id, wildc
 
 | Profile | Tweaks | What it is for |
 |---|---|---|
-| ⚖️ **balanced** | 28 | Everything tagged ★ recommended. Zero functionality loss. The one-click default. |
+| ⚖️ **balanced** | 27 | Everything tagged ★ recommended. Zero functionality loss. The one-click default. |
 | 🔒 **privacy** | 38 | Max privacy: all privacy/AI/Edge tweaks, hosts block, local search, Quad9 DoH, no cloud sync. |
 | 🎮 **gaming** | 46 | Balanced + DVR off, HAGS, windowed optimisations + VRR, raw mouse, MMCSS, Ultimate plan, no WU drivers, TCP tuning. Keeps Xbox services. |
 | 🖥️ **gaming-desktop** | 52 | Gaming + desktop-only power & latency: PCIe/USB3/disk power saving off, CPU min 100 % + aggressive boost, NIC power saving off, global 0.5 ms timer, memory compression off, no audio ducking, low-impact Defender. |
-| 🧹 **minimal** | 42 | Strip it down: every bloat set, services to manual, indexer off. |
-| 💻 **developer** | 38 | Balanced + dev mode, long paths, WSL2, Sandbox, verbose boot, extensions, classic menu. |
-| 🔋 **laptop** | 33 | Balanced + battery-friendly bits. Never touches throttling or the Ultimate plan. |
+| 💻🎮 **gaming-laptop** | 47 | Gaming for laptops: High Performance plan, aggressive boost / PCIe / USB / Wi-Fi power saving off **only while plugged in**, adaptive brightness off, no Modern Standby network. Battery side, throttling, core parking, MPO and memory tweaks untouched. |
+| 🧹 **minimal** | 41 | Strip it down: every bloat set, services to manual, indexer off. |
+| 💻 **developer** | 37 | Balanced + dev mode, long paths, WSL2, Sandbox, verbose boot, extensions, classic menu. |
+| 🔋 **laptop** | 32 | Balanced + battery-friendly bits. Never touches throttling or the Ultimate plan. |
 
 Opt-in **advanced** desktop tweaks (never in a profile): MSI interrupt mode for the GPU, NIC interrupt moderation / flow control / EEE off, Hyper-V hypervisor off, VBS off, Spectre mitigations off, dynamic tick off, GPU P-states.
 
@@ -124,7 +125,7 @@ src/WinForge.Diagnostics  hardware/OS inventory, runtime stats, WinForge Score, 
 src/WinForge.Gui.ps1      WPF, background runspace worker, dispatcher timer
 src/WinForge.Tui.ps1      console menu
 src/WinForge.Persist.ps1  logon watchdog (scheduled task) that re-applies drifted tweaks
-catalog/*.json            14 category files, 156 tweaks
+catalog/*.json            14 category files, 158 tweaks
 profiles/*.json           6 profiles (+ yours)
 tests/                    Pester (runs on Linux/macOS too)
 tools/                    Build-Docs, Invoke-Lint, Invoke-Tests

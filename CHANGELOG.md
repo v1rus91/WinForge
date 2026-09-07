@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.0 — 2026-09-07
+- New profile **gaming-laptop** (47 tweaks) and two laptop tweaks: AC-only gaming power settings
+  (PCIe ASPM, boost Aggressive, USB suspend, Wi-Fi max performance) and adaptive brightness off (power plan + Intel CABC).
+- `gaming.nic-power-off` is no longer tagged recommended (battery cost), so Balanced/Laptop profiles skip it.
+
 ## 1.1.0 — 2026-09-07
 - 11 new desktop-gaming tweaks: global 0.5 ms timer, memory compression/page combining off + DisablePagingExecutive,
   NIC power saving off, mouse/keyboard queue size, audio ducking off, low-impact Defender scans, QoS reserve 0,
