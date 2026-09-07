@@ -1,0 +1,73 @@
+{
+  "category": "security",
+  "tweaks": [
+    {
+      "id": "sec.wpbt-off",
+      "name": { "en": "Block OEM firmware app injection (WPBT)", "uk": "Блокувати інжект OEM-програм з прошивки (WPBT)" },
+      "description": { "en": "Windows Platform Binary Table lets the BIOS silently install vendor software on every boot (Lenovo/ASUS/… bloat). This disables it.", "uk": "WPBT дозволяє BIOS тихо ставити вендорські програми при кожному завантаженні (Lenovo/ASUS/…). Це вимикає його." },
+      "risk": "safe", "weight": 2, "tags": ["security", "oem", "recommended"], "reboot": true,
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager", "name": "DisableWpbtExecution", "value": 1 }
+      ]
+    },
+    {
+      "id": "sec.defender-cloud-samples",
+      "name": { "en": "Defender: never send file samples to Microsoft", "uk": "Defender: не надсилати зразки файлів Microsoft" },
+      "description": { "en": "Keeps real-time protection but sets SubmitSamplesConsent to 'Never send' and MAPS reporting to basic.", "uk": "Захист у реальному часі лишається, але SubmitSamplesConsent = «Ніколи», MAPS — базовий." },
+      "risk": "safe", "weight": 1, "tags": ["privacy"],
+      "actions": [
+        { "type": "powershell", "apply": "Set-MpPreference -SubmitSamplesConsent 2 -MAPSReporting 1 -ErrorAction SilentlyContinue", "revert": "Set-MpPreference -SubmitSamplesConsent 1 -MAPSReporting 2 -ErrorAction SilentlyContinue" },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Spynet", "name": "SubmitSamplesConsent", "value": 2 }
+      ],
+      "detect": [ { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Spynet", "name": "SubmitSamplesConsent", "value": 2 } ]
+    },
+    {
+      "id": "sec.bitlocker-auto-off",
+      "name": { "en": "Prevent automatic BitLocker device encryption", "uk": "Заборонити автоматичне шифрування BitLocker" },
+      "description": { "en": "24H2 silently encrypts new installs and ties the key to your Microsoft account. This blocks auto-encryption (you can still enable BitLocker manually).", "uk": "24H2 тихо шифрує нові інсталяції і прив’язує ключ до облікового запису Microsoft. Це блокує автошифрування (вручну BitLocker доступний)." },
+      "risk": "safe", "weight": 1, "tags": ["disk"], "minBuild": 26100,
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\BitLocker", "name": "PreventDeviceEncryption", "value": 1 }
+      ]
+    },
+    {
+      "id": "sec.no-auto-signon",
+      "name": { "en": "Disable automatic sign-in after update restarts", "uk": "Вимкнути автоматичний вхід після перезавантажень оновлення" },
+      "description": { "en": "Windows won't cache your credentials to auto-logon after an update reboot.", "uk": "Windows не кешуватиме облікові дані для автологіну після перезавантаження оновлення." },
+      "risk": "safe", "weight": 1, "tags": ["security"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System", "name": "DisableAutomaticRestartSignOn", "value": 1 }
+      ]
+    },
+    {
+      "id": "sec.uac-max",
+      "name": { "en": "UAC: always notify (secure desktop)", "uk": "UAC: завжди сповіщати (безпечний робочий стіл)" },
+      "description": { "en": "Highest UAC level; also prompts when Windows settings change.", "uk": "Найвищий рівень UAC; запит і при зміні налаштувань Windows." },
+      "risk": "safe", "weight": 0, "tags": ["security"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System", "name": "ConsentPromptBehaviorAdmin", "value": 2 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System", "name": "PromptOnSecureDesktop", "value": 1 }
+      ]
+    },
+    {
+      "id": "sec.rdp-file-warning-off",
+      "name": { "en": "Suppress the .rdp file security warning dialog", "uk": "Прибрати попередження безпеки для .rdp-файлів" },
+      "description": { "en": "For people who open saved RDP connections many times a day.", "uk": "Для тих, хто відкриває збережені RDP-підключення багато разів на день." },
+      "risk": "moderate", "weight": 0, "tags": ["annoyance"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services\\Client", "name": "RedirectionWarningDialogVersion", "value": 1 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Terminal Server Client", "name": "AuthenticationLevelOverride", "value": 0 }
+      ]
+    },
+    {
+      "id": "sec.exe-launch-warning-off",
+      "name": { "en": "Disable 'Open File - Security Warning' for downloads", "uk": "Вимкнути «Попередження безпеки» при відкритті завантажень" },
+      "description": { "en": "Stops zone-identifier (Mark of the Web) prompts. SmartScreen still checks executables.", "uk": "Без запитів через Mark of the Web. SmartScreen і далі перевіряє виконувані файли." },
+      "risk": "advanced", "weight": 0, "tags": ["annoyance"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Attachments", "name": "SaveZoneInformation", "value": 1 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Associations", "name": "LowRiskFileTypes", "value": ".exe;.msi;.bat;.cmd;.zip;.7z;.rar;", "kind": "String" }
+      ]
+    }
+  ]
+}

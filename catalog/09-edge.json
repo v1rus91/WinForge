@@ -1,0 +1,53 @@
+{
+  "category": "edge",
+  "tweaks": [
+    {
+      "id": "edge.no-ads",
+      "name": { "en": "Edge: remove ads, shopping, sidebar nags & first-run promos", "uk": "Edge: без реклами, шопінгу, бічної панелі та промо" },
+      "description": { "en": "New tab page content off, shopping assistant off, no default-browser campaigns, no wallet/donation, no Acrobat upsell, no recommendations.", "uk": "Без контенту на новій вкладці, шопінг-помічника, кампаній «зробити стандартним», гаманця/донатів, апсейлу Acrobat і рекомендацій." },
+      "risk": "safe", "weight": 2, "tags": ["ads", "recommended"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "NewTabPageContentEnabled", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "NewTabPageHideDefaultTopSites", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "EdgeShoppingAssistantEnabled", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "ShowRecommendationsEnabled", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "WalletDonationEnabled", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "HideFirstRunExperience", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "DefaultBrowserSettingsCampaignEnabled", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "SpotlightExperiencesAndRecommendationsEnabled", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "ShowAcrobatSubscriptionButton", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "TabServicesEnabled", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "AlternateErrorPagesEnabled", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "WebWidgetAllowed", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "StandaloneHubsSidebarEnabled", "value": 0 }
+      ]
+    },
+    {
+      "id": "edge.no-telemetry",
+      "name": { "en": "Edge: disable telemetry, startup boost & background mode", "uk": "Edge: вимкнути телеметрію, Startup Boost і фоновий режим" },
+      "description": { "en": "No metrics/personalization reporting; Edge no longer preloads at logon or stays running after you close it.", "uk": "Без звітів метрик/персоналізації; Edge не завантажується наперед при вході і не висить після закриття." },
+      "risk": "safe", "weight": 2, "tags": ["telemetry", "recommended"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "MetricsReportingEnabled", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "PersonalizationReportingEnabled", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "DiagnosticData", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "UserFeedbackAllowed", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "StartupBoostEnabled", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "BackgroundModeEnabled", "value": 0 }
+      ]
+    },
+    {
+      "id": "edge.uninstall",
+      "name": { "en": "Force-uninstall Microsoft Edge (keeps WebView2)", "uk": "Примусово видалити Microsoft Edge (WebView2 лишається)" },
+      "description": { "en": "Uses the EEA AllowUninstall unlock + stub MicrosoftEdge.exe trick and runs setup.exe --uninstall --system-level --force-uninstall. Widgets, Copilot and some Store links depend on Edge; WebView2 runtime is kept for apps.", "uk": "Використовує EEA-розблокування AllowUninstall + заглушку MicrosoftEdge.exe та запускає setup.exe --uninstall --system-level --force-uninstall. Віджети, Copilot і частина Store-посилань залежать від Edge; WebView2 лишається для програм." },
+      "risk": "advanced", "weight": 0, "tags": ["edge"], "reversible": false,
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\EdgeUpdateDev", "name": "AllowUninstall", "value": "", "kind": "String" },
+        { "type": "powershell",
+          "apply": "$stub=\"$env:SystemRoot\\SystemApps\\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\"; New-Item $stub -ItemType Directory -Force | Out-Null; New-Item (Join-Path $stub 'MicrosoftEdge.exe') -ItemType File -Force | Out-Null; $setup=Get-ChildItem \"${env:ProgramFiles(x86)}\\Microsoft\\Edge\\Application\\*\\Installer\\setup.exe\" -ErrorAction SilentlyContinue | Sort-Object FullName -Descending | Select-Object -First 1; if($setup){ Start-Process $setup.FullName -ArgumentList '--uninstall --system-level --force-uninstall' -Wait -NoNewWindow }; Get-ChildItem \"$env:Public\\Desktop\\Microsoft Edge.lnk\",\"$env:USERPROFILE\\Desktop\\Microsoft Edge.lnk\" -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue",
+          "revert": "winget install --id Microsoft.Edge --silent --accept-source-agreements --accept-package-agreements" }
+      ],
+      "detect": [ { "type": "fileMissing", "path": "%ProgramFiles(x86)%\\Microsoft\\Edge\\Application\\msedge.exe" } ]
+    }
+  ]
+}

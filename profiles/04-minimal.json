@@ -1,0 +1,7 @@
+{
+  "id": "minimal", "order": 4, "icon": "🧹",
+  "name": { "en": "Minimal / Debloat", "uk": "Мінімальний / Debloat" },
+  "description": { "en": "Strip Windows down: all bloatware sets incl. Xbox, Teams, OneDrive, optional inbox apps; services to manual; search indexer off; Edge ads/telemetry off.", "uk": "Роздягнути Windows: усі набори bloatware вкл. Xbox, Teams, OneDrive, зайві вбудовані застосунки; служби у ручний; індексатор вимкнено; Edge без реклами/телеметрії." },
+  "include": [ "tag:recommended", "category:bloatware", "category:services", "perf.search-indexer", "perf.sysmain", "edge.no-ads", "edge.no-telemetry", "ui.hide-taskview-chat", "explorer.hide-home-gallery" ],
+  "exclude": [ "svc.print", "svc.bluetooth", "svc.remote-desktop", "svc.xbox" ]
+}

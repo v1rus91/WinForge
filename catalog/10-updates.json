@@ -1,0 +1,92 @@
+{
+  "category": "updates",
+  "tweaks": [
+    {
+      "id": "updates.no-auto-reboot",
+      "name": { "en": "Never auto-restart while someone is logged in", "uk": "Ніколи не перезавантажуватись автоматично при активному користувачі" },
+      "description": { "en": "Updates install but wait for you to reboot.", "uk": "Оновлення встановлюються, але чекають на ваше перезавантаження." },
+      "risk": "safe", "weight": 2, "tags": ["recommended"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU", "name": "NoAutoRebootWithLoggedOnUsers", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU", "name": "AUOptions", "value": 3 }
+      ]
+    },
+    {
+      "id": "updates.no-feature-asap",
+      "name": { "en": "Don't get feature updates 'as soon as available'", "uk": "Не отримувати функціональні оновлення «щойно доступні»" },
+      "description": { "en": "Opts out of continuous innovation early rollouts; you get new features on the stable cadence.", "uk": "Відмова від раннього розгортання; нові функції — за стабільним графіком." },
+      "risk": "safe", "weight": 1, "tags": ["recommended"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\WindowsUpdate\\UX\\Settings", "name": "IsContinuousInnovationOptedIn", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate", "name": "AllowOptionalContent", "value": 0 }
+      ]
+    },
+    {
+      "id": "updates.defer-feature",
+      "name": { "en": "Defer feature updates by 365 days", "uk": "Відкласти функціональні оновлення на 365 днів" },
+      "description": { "en": "Stay on the current release for a year; security updates keep flowing.", "uk": "Лишайтеся на поточному релізі рік; оновлення безпеки продовжують надходити." },
+      "risk": "moderate", "weight": 1, "tags": ["stability"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate", "name": "DeferFeatureUpdates", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate", "name": "DeferFeatureUpdatesPeriodInDays", "value": 365 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate", "name": "BranchReadinessLevel", "value": 32 }
+      ]
+    },
+    {
+      "id": "updates.no-drivers",
+      "name": { "en": "Exclude drivers from Windows Update", "uk": "Не отримувати драйвери через Windows Update" },
+      "description": { "en": "Prevents WU from replacing your GPU/audio/chipset drivers with older generic ones.", "uk": "WU не замінюватиме драйвери GPU/аудіо/чипсету на старіші загальні." },
+      "risk": "moderate", "weight": 1, "tags": ["drivers", "gaming"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate", "name": "ExcludeWUDriversInQualityUpdate", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\WindowsUpdate\\UX\\Settings", "name": "ExcludeWUDriversInQualityUpdate", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Device Metadata", "name": "PreventDeviceMetadataFromNetwork", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DriverSearching", "name": "DontSearchWindowsUpdate", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching", "name": "SearchOrderConfig", "value": 0 }
+      ]
+    },
+    {
+      "id": "updates.delivery-optimization-off",
+      "name": { "en": "Disable Delivery Optimization P2P upload", "uk": "Вимкнути P2P-роздачу Delivery Optimization" },
+      "description": { "en": "Your PC stops seeding updates to other PCs on the internet (DownloadMode 0 = HTTP only).", "uk": "Ваш ПК не роздає оновлення іншим ПК в інтернеті (DownloadMode 0 = лише HTTP)." },
+      "risk": "safe", "weight": 1, "tags": ["network", "recommended"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DeliveryOptimization", "name": "DODownloadMode", "value": 0 },
+        { "type": "registry", "path": "HKU:\\S-1-5-20\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DeliveryOptimization\\Settings", "name": "DownloadMode", "value": 0 }
+      ]
+    },
+    {
+      "id": "updates.store-auto-off",
+      "name": { "en": "Disable automatic Store app updates", "uk": "Вимкнути автооновлення застосунків Store" },
+      "description": { "en": "Store apps update only when you open the Store and ask.", "uk": "Застосунки Store оновлюються лише коли ви попросите у Store." },
+      "risk": "moderate", "weight": 0, "tags": ["store"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\WindowsStore", "name": "AutoDownload", "value": 2 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\WindowsStore\\WindowsUpdate", "name": "AutoDownload", "value": 2 }
+      ]
+    },
+    {
+      "id": "updates.no-mrt",
+      "name": { "en": "Don't push Malicious Software Removal Tool monthly", "uk": "Не завантажувати MSRT щомісяця" },
+      "description": { "en": "Skips the ~100 MB monthly MRT download (Defender still protects you).", "uk": "Пропускає щомісячне завантаження MSRT ~100 МБ (Defender і далі захищає)." },
+      "risk": "safe", "weight": 0, "tags": ["network"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\MRT", "name": "DontOfferThroughWUAU", "value": 1 }
+      ]
+    },
+    {
+      "id": "updates.pause-forever",
+      "name": { "en": "Pause all Windows Updates (until 2099)", "uk": "Призупинити всі оновлення Windows (до 2099)" },
+      "description": { "en": "Sets the pause window far into the future. Security-risky: revert to receive patches again.", "uk": "Пауза далеко в майбутнє. Ризик для безпеки: відкотіть, щоб знову отримувати патчі." },
+      "risk": "advanced", "weight": 0, "tags": ["updates"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\WindowsUpdate\\UX\\Settings", "name": "PauseUpdatesExpiryTime", "value": "2099-12-31T00:00:00Z", "kind": "String" },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\WindowsUpdate\\UX\\Settings", "name": "PauseFeatureUpdatesStartTime", "value": "2025-01-01T00:00:00Z", "kind": "String" },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\WindowsUpdate\\UX\\Settings", "name": "PauseFeatureUpdatesEndTime", "value": "2099-12-31T00:00:00Z", "kind": "String" },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\WindowsUpdate\\UX\\Settings", "name": "PauseQualityUpdatesStartTime", "value": "2025-01-01T00:00:00Z", "kind": "String" },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\WindowsUpdate\\UX\\Settings", "name": "PauseQualityUpdatesEndTime", "value": "2099-12-31T00:00:00Z", "kind": "String" },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\WindowsUpdate\\UX\\Settings", "name": "PauseUpdatesStartTime", "value": "2025-01-01T00:00:00Z", "kind": "String" }
+      ]
+    }
+  ]
+}

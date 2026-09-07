@@ -1,0 +1,169 @@
+{
+  "category": "services",
+  "tweaks": [
+    {
+      "id": "svc.safe-manual",
+      "name": { "en": "Set rarely needed services to Manual (safe list)", "uk": "Перевести рідко потрібні служби у ручний режим (безпечний список)" },
+      "description": { "en": "Services start on demand instead of at boot: Fax, Retail Demo, Maps Broker, Parental Controls, Phone, Wallet, Payments/NFC, Windows Insider, Remote Registry, Program Compatibility Assistant, Downloaded Maps, Connected User Experiences helpers.", "uk": "Служби стартують на вимогу, а не при завантаженні: Fax, Retail Demo, Maps Broker, батьківський контроль, Телефон, Гаманець, Платежі/NFC, Windows Insider, Remote Registry, PCA, завантажені мапи." },
+      "risk": "safe", "weight": 2, "tags": ["service", "boot", "recommended"],
+      "actions": [
+        { "type": "service", "name": "Fax", "startup": "Manual" },
+        { "type": "service", "name": "RetailDemo", "startup": "Disabled" },
+        { "type": "service", "name": "MapsBroker", "startup": "Manual" },
+        { "type": "service", "name": "WpcMonSvc", "startup": "Manual" },
+        { "type": "service", "name": "PhoneSvc", "startup": "Manual" },
+        { "type": "service", "name": "WalletService", "startup": "Manual" },
+        { "type": "service", "name": "SEMgrSvc", "startup": "Manual" },
+        { "type": "service", "name": "wisvc", "startup": "Manual" },
+        { "type": "service", "name": "RemoteRegistry", "startup": "Disabled" },
+        { "type": "service", "name": "PcaSvc", "startup": "Manual" },
+        { "type": "service", "name": "TrkWks", "startup": "Manual" },
+        { "type": "service", "name": "WMPNetworkSvc", "startup": "Manual" },
+        { "type": "service", "name": "lmhosts", "startup": "Manual" },
+        { "type": "service", "name": "SharedAccess", "startup": "Manual" },
+        { "type": "service", "name": "SCardSvr", "startup": "Manual" },
+        { "type": "service", "name": "ScDeviceEnum", "startup": "Manual" },
+        { "type": "service", "name": "SSDPSRV", "startup": "Manual" },
+        { "type": "service", "name": "upnphost", "startup": "Manual" },
+        { "type": "service", "name": "WbioSrvc", "startup": "Manual" },
+        { "type": "service", "name": "wlidsvc", "startup": "Manual" },
+        { "type": "service", "name": "DusmSvc", "startup": "Manual" },
+        { "type": "service", "name": "AJRouter", "startup": "Disabled" },
+        { "type": "service", "name": "NetTcpPortSharing", "startup": "Disabled" },
+        { "type": "service", "name": "tzautoupdate", "startup": "Disabled" },
+        { "type": "service", "name": "shpamsvc", "startup": "Disabled" },
+        { "type": "service", "name": "DialogBlockingService", "startup": "Disabled" },
+        { "type": "service", "name": "AssignedAccessManagerSvc", "startup": "Disabled" }
+      ],
+      "detect": [
+        { "type": "service", "name": "RetailDemo", "startup": "Disabled" },
+        { "type": "service", "name": "MapsBroker", "startup": "Manual" },
+        { "type": "service", "name": "PcaSvc", "startup": "Manual" }
+      ]
+    },
+    {
+      "id": "svc.diagnostics",
+      "name": { "en": "Disable diagnostic policy & troubleshooting services", "uk": "Вимкнути служби діагностичної політики та усунення несправностей" },
+      "description": { "en": "DPS, WdiServiceHost, WdiSystemHost, diagnosticshub collector. Built-in troubleshooters stop working until re-enabled.", "uk": "DPS, WdiServiceHost, WdiSystemHost, diagnosticshub. Вбудовані засоби усунення несправностей не працюватимуть до ввімкнення." },
+      "risk": "moderate", "weight": 1, "tags": ["service", "telemetry"],
+      "actions": [
+        { "type": "service", "name": "DPS", "startup": "Disabled" },
+        { "type": "service", "name": "WdiServiceHost", "startup": "Disabled" },
+        { "type": "service", "name": "WdiSystemHost", "startup": "Disabled" },
+        { "type": "service", "name": "diagnosticshub.standardcollector.service", "startup": "Disabled" }
+      ]
+    },
+    {
+      "id": "svc.xbox",
+      "name": { "en": "Disable Xbox Live services", "uk": "Вимкнути служби Xbox Live" },
+      "description": { "en": "XblAuthManager, XblGameSave, XboxNetApiSvc, XboxGipSvc, GameInputSvc. Breaks Game Pass / Xbox sign-in.", "uk": "XblAuthManager, XblGameSave, XboxNetApiSvc, XboxGipSvc, GameInputSvc. Ламає Game Pass / вхід Xbox." },
+      "risk": "moderate", "weight": 1, "tags": ["service", "xbox"],
+      "actions": [
+        { "type": "service", "name": "XblAuthManager", "startup": "Disabled" },
+        { "type": "service", "name": "XblGameSave", "startup": "Disabled" },
+        { "type": "service", "name": "XboxNetApiSvc", "startup": "Disabled" },
+        { "type": "service", "name": "XboxGipSvc", "startup": "Disabled" },
+        { "type": "task", "path": "\\Microsoft\\XblGameSave\\", "name": "XblGameSaveTask" }
+      ]
+    },
+    {
+      "id": "svc.print",
+      "name": { "en": "Disable Print Spooler (no printers)", "uk": "Вимкнути Print Spooler (немає принтерів)" },
+      "description": { "en": "Also closes the PrintNightmare attack surface. Re-enable before printing or Print-to-PDF.", "uk": "Також закриває вектор атаки PrintNightmare. Увімкніть перед друком чи Print-to-PDF." },
+      "risk": "moderate", "weight": 1, "tags": ["service", "security"],
+      "actions": [
+        { "type": "service", "name": "Spooler", "startup": "Disabled" },
+        { "type": "service", "name": "PrintNotify", "startup": "Disabled" }
+      ]
+    },
+    {
+      "id": "svc.bluetooth",
+      "name": { "en": "Disable Bluetooth services", "uk": "Вимкнути служби Bluetooth" },
+      "description": { "en": "bthserv, BTAGService, BluetoothUserService. For desktops with no BT peripherals.", "uk": "bthserv, BTAGService, BluetoothUserService. Для десктопів без BT-периферії." },
+      "risk": "moderate", "weight": 0, "tags": ["service"],
+      "actions": [
+        { "type": "service", "name": "bthserv", "startup": "Disabled" },
+        { "type": "service", "name": "BTAGService", "startup": "Disabled" },
+        { "type": "service", "name": "BluetoothUserService", "startup": "Disabled" }
+      ]
+    },
+    {
+      "id": "svc.hyperv",
+      "name": { "en": "Disable Hyper-V guest integration services", "uk": "Вимкнути служби інтеграції гостя Hyper-V" },
+      "description": { "en": "vmic* services only matter when Windows runs INSIDE a Hyper-V VM. Safe on physical machines.", "uk": "Служби vmic* потрібні лише коли Windows працює ВСЕРЕДИНІ VM Hyper-V. Безпечно на фізичних ПК." },
+      "risk": "safe", "weight": 1, "tags": ["service"],
+      "actions": [
+        { "type": "service", "name": "vmicguestinterface", "startup": "Disabled" },
+        { "type": "service", "name": "vmicheartbeat", "startup": "Disabled" },
+        { "type": "service", "name": "vmickvpexchange", "startup": "Disabled" },
+        { "type": "service", "name": "vmicrdv", "startup": "Disabled" },
+        { "type": "service", "name": "vmicshutdown", "startup": "Disabled" },
+        { "type": "service", "name": "vmictimesync", "startup": "Disabled" },
+        { "type": "service", "name": "vmicvmsession", "startup": "Disabled" },
+        { "type": "service", "name": "vmicvss", "startup": "Disabled" }
+      ],
+      "detect": [ { "type": "service", "name": "vmicheartbeat", "startup": "Disabled" } ]
+    },
+    {
+      "id": "svc.remote-desktop",
+      "name": { "en": "Disable Remote Desktop & Remote Assistance services", "uk": "Вимкнути служби віддаленого робочого столу та допомоги" },
+      "description": { "en": "TermService, SessionEnv, UmRdpService, RemoteAccess; Remote Assistance policy off.", "uk": "TermService, SessionEnv, UmRdpService, RemoteAccess; політика віддаленої допомоги вимкнена." },
+      "risk": "moderate", "weight": 1, "tags": ["service", "security"],
+      "actions": [
+        { "type": "service", "name": "TermService", "startup": "Disabled" },
+        { "type": "service", "name": "SessionEnv", "startup": "Disabled" },
+        { "type": "service", "name": "UmRdpService", "startup": "Disabled" },
+        { "type": "service", "name": "RemoteAccess", "startup": "Disabled" },
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Remote Assistance", "name": "fAllowToGetHelp", "value": 0 }
+      ]
+    },
+    {
+      "id": "svc.edge-update",
+      "name": { "en": "Disable Edge & WebView2 background updaters", "uk": "Вимкнути фонові оновлювачі Edge та WebView2" },
+      "description": { "en": "edgeupdate/edgeupdatem services and the four update scheduled tasks. Edge still updates when launched.", "uk": "Служби edgeupdate/edgeupdatem та чотири завдання оновлення. Edge оновлюється при запуску." },
+      "risk": "safe", "weight": 1, "tags": ["service", "edge"],
+      "actions": [
+        { "type": "service", "name": "edgeupdate", "startup": "Disabled" },
+        { "type": "service", "name": "edgeupdatem", "startup": "Disabled" },
+        { "type": "task", "path": "\\", "name": "MicrosoftEdgeUpdateTaskMachineCore" },
+        { "type": "task", "path": "\\", "name": "MicrosoftEdgeUpdateTaskMachineUA" },
+        { "type": "task", "path": "\\Microsoft\\Edge\\", "name": "MicrosoftEdgeWebView2UpdateTaskMachineCore" },
+        { "type": "task", "path": "\\Microsoft\\Edge\\", "name": "MicrosoftEdgeWebView2UpdateTaskMachineUA" }
+      ],
+      "detect": [ { "type": "service", "name": "edgeupdate", "startup": "Disabled" } ]
+    },
+    {
+      "id": "svc.maintenance-tasks",
+      "name": { "en": "Disable idle maintenance & misc background tasks", "uk": "Вимкнути фонове обслуговування та зайві завдання" },
+      "description": { "en": "Office telemetry, Family Safety, Maps updates, Work Folders, Speech, XblGameSave, Chkdsk proxy, Flighting/Insider tasks, CloudExperienceHost, Windows.old cleanup prompts.", "uk": "Телеметрія Office, Family Safety, оновлення мап, Work Folders, Speech, Flighting/Insider, CloudExperienceHost тощо." },
+      "risk": "safe", "weight": 1, "tags": ["task"],
+      "actions": [
+        { "type": "task", "path": "\\Microsoft\\Office\\", "name": "OfficeTelemetryAgentFallBack2016" },
+        { "type": "task", "path": "\\Microsoft\\Office\\", "name": "OfficeTelemetryAgentLogOn2016" },
+        { "type": "task", "path": "\\Microsoft\\Office\\", "name": "Office ClickToRun Service Monitor" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Shell\\", "name": "FamilySafetyMonitor" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Shell\\", "name": "FamilySafetyRefreshTask" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Maps\\", "name": "MapsUpdateTask" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Maps\\", "name": "MapsToastTask" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Work Folders\\", "name": "Work Folders Logon Synchronization" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Work Folders\\", "name": "Work Folders Maintenance Work" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Speech\\", "name": "SpeechModelDownloadTask" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Flighting\\FeatureConfig\\", "name": "ReconcileFeatures" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Flighting\\OneSettings\\", "name": "RefreshCache" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\CloudExperienceHost\\", "name": "CreateObjectTask" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\PushToInstall\\", "name": "LoginCheck" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\PushToInstall\\", "name": "Registration" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\License Manager\\", "name": "TempSignedLicenseExchange" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Diagnosis\\", "name": "RecommendedTroubleshootingScanner" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Diagnosis\\", "name": "Scheduled" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Device Information\\", "name": "Device" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Device Information\\", "name": "Device User" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Power Efficiency Diagnostics\\", "name": "AnalyzeSystem" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\StateRepository\\", "name": "MaintenanceTasks" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\WindowsUpdate\\", "name": "Scheduled Start" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Wininet\\", "name": "CacheTask" }
+      ],
+      "detect": [ { "type": "task", "path": "\\Microsoft\\Windows\\Maps\\", "name": "MapsUpdateTask" }, { "type": "task", "path": "\\Microsoft\\Windows\\Shell\\", "name": "FamilySafetyMonitor" } ]
+    }
+  ]
+}

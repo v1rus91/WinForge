@@ -1,0 +1,178 @@
+{
+  "category": "ui",
+  "tweaks": [
+    {
+      "id": "ui.dark-mode",
+      "name": { "en": "Enable dark mode (system + apps)", "uk": "Увімкнути темний режим (система + застосунки)" },
+      "description": { "en": "Dark theme for shell and applications.", "uk": "Темна тема для оболонки та застосунків." },
+      "risk": "safe", "weight": 0, "tags": ["theme"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", "name": "AppsUseLightTheme", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", "name": "SystemUsesLightTheme", "value": 0 }
+      ]
+    },
+    {
+      "id": "ui.classic-context-menu",
+      "name": { "en": "Restore classic (full) right-click context menu", "uk": "Повернути класичне (повне) контекстне меню" },
+      "description": { "en": "No more 'Show more options' click. Registers the empty InprocServer32 CLSID override.", "uk": "Без кліку «Показати додаткові параметри». Реєструє порожній InprocServer32 для CLSID." },
+      "risk": "safe", "weight": 2, "tags": ["explorer", "recommended"], "restartExplorer": true, "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32", "name": "(Default)", "value": "", "kind": "String" }
+      ],
+      "revert": [
+        { "type": "registryDeleteKey", "path": "HKCU:\\SOFTWARE\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" }
+      ]
+    },
+    {
+      "id": "ui.taskbar-left",
+      "name": { "en": "Align taskbar to the left", "uk": "Вирівняти панель завдань ліворуч" },
+      "description": { "en": "Windows 10-style left alignment of Start and pinned icons.", "uk": "Вирівнювання Пуску та закріплених іконок ліворуч, як у Windows 10." },
+      "risk": "safe", "weight": 0, "tags": ["taskbar"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "name": "TaskbarAl", "value": 0 }
+      ]
+    },
+    {
+      "id": "ui.taskbar-search-icon",
+      "name": { "en": "Taskbar search: icon only (no box, no highlights)", "uk": "Пошук на панелі: лише іконка (без поля і «підсвіток»)" },
+      "description": { "en": "Compact search button; disables Search Highlights (Bing trending content) and dynamic content in the search box.", "uk": "Компактна кнопка пошуку; вимикає Search Highlights (тренди Bing) та динамічний вміст у полі пошуку." },
+      "risk": "safe", "weight": 1, "tags": ["taskbar", "ads"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search", "name": "SearchboxTaskbarMode", "value": 1 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\SearchSettings", "name": "IsDynamicSearchBoxEnabled", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "name": "EnableDynamicContentInSearchBox", "value": 0 }
+      ]
+    },
+    {
+      "id": "ui.hide-taskview-chat",
+      "name": { "en": "Hide Task View & Chat buttons", "uk": "Сховати кнопки Подання завдань та Чат" },
+      "description": { "en": "Removes the Task View and (on 22H2) Teams Chat buttons from the taskbar. Win+Tab still works.", "uk": "Прибирає кнопки Подання завдань та (на 22H2) Чат Teams. Win+Tab працює." },
+      "risk": "safe", "weight": 1, "tags": ["taskbar"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "name": "ShowTaskViewButton", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "name": "TaskbarMn", "value": 0 }
+      ]
+    },
+    {
+      "id": "ui.end-task",
+      "name": { "en": "Add 'End task' to taskbar right-click", "uk": "Додати «Завершити завдання» у контекстне меню панелі" },
+      "description": { "en": "Kill hung apps directly from the taskbar without Task Manager.", "uk": "Завершуйте зависі програми з панелі завдань без Диспетчера." },
+      "risk": "safe", "weight": 1, "tags": ["taskbar", "recommended"], "minBuild": 22631, "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings", "name": "TaskbarEndTask", "value": 1 }
+      ]
+    },
+    {
+      "id": "ui.taskbar-seconds",
+      "name": { "en": "Show seconds in the taskbar clock", "uk": "Показувати секунди в годиннику" },
+      "description": { "en": "Classic seconds display. Minor extra CPU wakeups.", "uk": "Класичний показ секунд. Незначні додаткові пробудження CPU." },
+      "risk": "safe", "weight": 0, "tags": ["taskbar"], "minBuild": 22621, "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "name": "ShowSecondsInSystemClock", "value": 1 }
+      ]
+    },
+    {
+      "id": "ui.start-no-recommended",
+      "name": { "en": "Hide 'Recommended' section & account promos in Start", "uk": "Сховати «Рекомендоване» та промо облікового запису у Пуску" },
+      "description": { "en": "Hides the Recommended feed, Iris ads in Start and Microsoft account notifications; shows more pins.", "uk": "Ховає стрічку «Рекомендоване», рекламу Iris у Пуску та сповіщення облікового запису Microsoft; більше місця для закріплених." },
+      "risk": "safe", "weight": 2, "tags": ["start", "ads", "recommended"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer", "name": "HideRecommendedSection", "value": 1 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "name": "Start_IrisRecommendations", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "name": "Start_AccountNotifications", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "name": "Start_Layout", "value": 1 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\SystemSettings\\AccountNotifications", "name": "EnableAccountNotifications", "value": 0 }
+      ]
+    },
+    {
+      "id": "ui.start-allapps-category",
+      "name": { "en": "Start 'All apps' as category grid (25H2)", "uk": "«Усі застосунки» у Пуску — сітка категорій (25H2)" },
+      "description": { "en": "Uses the new category view instead of the alphabetical list.", "uk": "Новий вигляд категорій замість алфавітного списку." },
+      "risk": "safe", "weight": 0, "tags": ["start"], "minBuild": 26200, "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Start", "name": "AllAppsViewMode", "value": 0 }
+      ]
+    },
+    {
+      "id": "ui.lockscreen-clean",
+      "name": { "en": "Clean lock screen: no Spotlight tips, fun facts, ads", "uk": "Чистий екран блокування: без порад Spotlight, фактів, реклами" },
+      "description": { "en": "Keeps your wallpaper but removes overlay text, tips and 'Like what you see'.", "uk": "Лишає шпалери, але прибирає текст поверх, поради та «Подобається?»." },
+      "risk": "safe", "weight": 1, "tags": ["ads"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "name": "RotatingLockScreenOverlayEnabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "name": "SubscribedContent-338387Enabled", "value": 0 }
+      ]
+    },
+    {
+      "id": "ui.desktop-spotlight-off",
+      "name": { "en": "Disable Desktop Spotlight & its desktop icon", "uk": "Вимкнути Desktop Spotlight та його іконку на робочому столі" },
+      "description": { "en": "Stops the rotating Bing wallpaper feature and removes the 'Learn about this picture' icon.", "uk": "Вимикає ротацію шпалер Bing і прибирає іконку «Дізнатися про це зображення»." },
+      "risk": "safe", "weight": 1, "tags": ["ads"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent", "name": "DisableSpotlightCollectionOnDesktop", "value": 1 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\HideDesktopIcons\\NewStartPanel", "name": "{2cc5ca98-6485-489a-920e-b3e88a6ccce3}", "value": 1 }
+      ]
+    },
+    {
+      "id": "ui.notifications-quiet",
+      "name": { "en": "Silence Windows tips, suggestions & welcome experience", "uk": "Вимкнути поради Windows, підказки та «вітальний досвід»" },
+      "description": { "en": "No 'tips and tricks' toasts, no post-update 'finish setting up' nags, no Suggested notifications, no backup reminders.", "uk": "Без тостів «поради», без «завершіть налаштування» після оновлень, без «Рекомендованих» сповіщень і нагадувань про бекап." },
+      "risk": "safe", "weight": 2, "tags": ["annoyance", "recommended"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\UserProfileEngagement", "name": "ScoobeSystemSettingEnabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings\\Windows.SystemToast.Suggested", "name": "Enabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings\\Windows.SystemToast.BackupReminder", "name": "Enabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "name": "ShowSyncProviderNotifications", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent", "name": "DisableWindowsSpotlightWindowsWelcomeExperience", "value": 1 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "name": "SubscribedContent-310093Enabled", "value": 0 }
+      ]
+    },
+    {
+      "id": "ui.settings-home-off",
+      "name": { "en": "Hide the Settings 'Home' page (account/365 ads)", "uk": "Сховати сторінку «Головна» в Параметрах (реклама акаунта/365)" },
+      "description": { "en": "Settings opens on System instead of the promotional Home page.", "uk": "Параметри відкриваються на «Система» замість рекламної «Головної»." },
+      "risk": "safe", "weight": 1, "tags": ["ads"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", "name": "SettingsPageVisibility", "value": "hide:home", "kind": "String" }
+      ]
+    },
+    {
+      "id": "ui.snap-flyouts-off",
+      "name": { "en": "Disable Snap layout flyouts (keep snapping)", "uk": "Вимкнути спливаючі Snap-розкладки (снепінг лишити)" },
+      "description": { "en": "No layout popup when hovering maximise or dragging to the top edge.", "uk": "Без спливаючого вікна розкладок при наведенні на «Розгорнути» чи перетягуванні вгору." },
+      "risk": "safe", "weight": 0, "tags": ["annoyance"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "name": "EnableSnapBar", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "name": "EnableSnapAssistFlyout", "value": 0 }
+      ]
+    },
+    {
+      "id": "ui.verbose-logon",
+      "name": { "en": "Verbose boot/logon status messages", "uk": "Детальні повідомлення при завантаженні/вході" },
+      "description": { "en": "Shows what Windows is doing during boot and shutdown instead of 'Please wait'.", "uk": "Показує, що саме робить Windows під час завантаження і вимкнення замість «Зачекайте»." },
+      "risk": "safe", "weight": 0, "tags": ["boot"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System", "name": "VerboseStatus", "value": 1 }
+      ]
+    },
+    {
+      "id": "ui.detailed-bsod",
+      "name": { "en": "Detailed BSOD (show stop code parameters, no sad face)", "uk": "Детальний BSOD (параметри коду, без сумного смайлика)" },
+      "description": { "en": "Old-style crash screen with driver names and bugcheck parameters.", "uk": "Класичний екран збою з іменами драйверів та параметрами bugcheck." },
+      "risk": "safe", "weight": 0, "tags": ["debug"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\CrashControl", "name": "DisplayParameters", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\CrashControl", "name": "DisableEmoticon", "value": 1 }
+      ]
+    },
+    {
+      "id": "ui.drag-tray-off",
+      "name": { "en": "Disable the drag-to-share tray (25H2)", "uk": "Вимкнути «трей» при перетягуванні файлів (25H2)" },
+      "description": { "en": "Removes the app-share bar that appears at the top of the screen when dragging a file.", "uk": "Прибирає панель «поділитися», що з’являється вгорі при перетягуванні файлу." },
+      "risk": "safe", "weight": 0, "tags": ["annoyance"], "minBuild": 26200, "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CDP", "name": "DragTrayEnabled", "value": 0 }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "category": "explorer",
+  "tweaks": [
+    {
+      "id": "explorer.show-extensions",
+      "name": { "en": "Show file extensions & hidden files", "uk": "Показувати розширення та приховані файли" },
+      "description": { "en": "Security basic: never be fooled by 'invoice.pdf.exe' again.", "uk": "База безпеки: більше не обдурять «invoice.pdf.exe»." },
+      "risk": "safe", "weight": 2, "tags": ["recommended", "security"], "restartExplorer": true, "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "name": "HideFileExt", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "name": "Hidden", "value": 1 }
+      ]
+    },
+    {
+      "id": "explorer.open-this-pc",
+      "name": { "en": "Open File Explorer to 'This PC'", "uk": "Відкривати Провідник на «Цей ПК»" },
+      "description": { "en": "Skips Home/Quick access on launch.", "uk": "Пропускає «Головна»/Швидкий доступ при запуску." },
+      "risk": "safe", "weight": 0, "tags": ["explorer"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "name": "LaunchTo", "value": 1 }
+      ]
+    },
+    {
+      "id": "explorer.no-recent-frequent",
+      "name": { "en": "Disable recent files & frequent folders in Home", "uk": "Вимкнути останні файли та часті теки в «Головній»" },
+      "description": { "en": "Privacy: nothing you opened shows up in Explorer Home or Start.", "uk": "Приватність: нічого з відкритого не з’являється в Головній Провідника чи Пуску." },
+      "risk": "safe", "weight": 1, "tags": ["privacy"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer", "name": "ShowRecent", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer", "name": "ShowFrequent", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer", "name": "ShowCloudFilesInQuickAccess", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "name": "Start_TrackDocs", "value": 0 }
+      ]
+    },
+    {
+      "id": "explorer.hide-home-gallery",
+      "name": { "en": "Hide Home & Gallery from the navigation pane", "uk": "Сховати «Головна» та «Галерея» з панелі навігації" },
+      "description": { "en": "Removes the two 23H2+ entries from Explorer's left sidebar.", "uk": "Прибирає два записи 23H2+ з лівої панелі Провідника." },
+      "risk": "safe", "weight": 1, "tags": ["explorer"], "minBuild": 22621, "restartExplorer": true, "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Classes\\CLSID\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}", "name": "System.IsPinnedToNameSpaceTree", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Classes\\CLSID\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}", "name": "System.IsPinnedToNameSpaceTree", "value": 0 }
+      ]
+    },
+    {
+      "id": "explorer.hide-onedrive",
+      "name": { "en": "Hide OneDrive from the navigation pane", "uk": "Сховати OneDrive з панелі навігації" },
+      "description": { "en": "Keeps OneDrive installed but removes its sidebar entry.", "uk": "OneDrive лишається, але без запису в бічній панелі." },
+      "risk": "safe", "weight": 0, "tags": ["explorer", "onedrive"], "restartExplorer": true, "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Classes\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}", "name": "System.IsPinnedToNameSpaceTree", "value": 0 }
+      ]
+    },
+    {
+      "id": "explorer.hide-duplicate-drives",
+      "name": { "en": "Hide duplicate removable drives in the sidebar", "uk": "Сховати дублікати знімних дисків у бічній панелі" },
+      "description": { "en": "USB drives appear once (under This PC) instead of twice.", "uk": "USB-накопичувачі показуються один раз (у «Цей ПК») замість двох." },
+      "risk": "safe", "weight": 0, "tags": ["explorer"], "restartExplorer": true,
+      "actions": [
+        { "type": "registryDeleteKey", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\DelegateFolders\\{F5FB2C77-0E2F-4A16-A381-3E560C68BC83}" }
+      ]
+    },
+    {
+      "id": "explorer.compact-mode",
+      "name": { "en": "Compact view (denser rows)", "uk": "Компактний вигляд (щільніші рядки)" },
+      "description": { "en": "Windows 10-style spacing in file lists.", "uk": "Щільність списків, як у Windows 10." },
+      "risk": "safe", "weight": 0, "tags": ["explorer"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "name": "UseCompactMode", "value": 1 }
+      ]
+    },
+    {
+      "id": "explorer.no-shortcut-suffix",
+      "name": { "en": "No '- Shortcut' suffix on new shortcuts", "uk": "Без суфікса «- Ярлик» у нових ярликах" },
+      "description": { "en": "New shortcuts are named exactly like their target.", "uk": "Нові ярлики називаються як їх ціль." },
+      "risk": "safe", "weight": 0, "tags": ["explorer"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer", "name": "link", "value": "00 00 00 00", "kind": "Binary" }
+      ]
+    },
+    {
+      "id": "explorer.no-lowdisk-nag",
+      "name": { "en": "Disable low disk space warnings", "uk": "Вимкнути попередження про мало місця" },
+      "description": { "en": "For small SSDs where the warning is a permanent annoyance.", "uk": "Для малих SSD, де попередження постійно дратує." },
+      "risk": "safe", "weight": 0, "tags": ["annoyance"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", "name": "NoLowDiskSpaceChecks", "value": 1 }
+      ]
+    },
+    {
+      "id": "explorer.copy-move-to",
+      "name": { "en": "Add 'Copy to' / 'Move to' to the context menu", "uk": "Додати «Копіювати в» / «Перемістити в» у контекстне меню" },
+      "description": { "en": "Classic folder-picker actions on right-click (visible in the full context menu).", "uk": "Класичні дії з вибором теки у контекстному меню (у повному меню)." },
+      "risk": "safe", "weight": 0, "tags": ["explorer"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Classes\\AllFilesystemObjects\\shellex\\ContextMenuHandlers\\Copy To", "name": "(Default)", "value": "{C2FBB630-2971-11D1-A18C-00C04FD75D13}", "kind": "String" },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Classes\\AllFilesystemObjects\\shellex\\ContextMenuHandlers\\Move To", "name": "(Default)", "value": "{C2FBB631-2971-11D1-A18C-00C04FD75D13}", "kind": "String" }
+      ]
+    },
+    {
+      "id": "explorer.search-no-bing",
+      "name": { "en": "Start/Explorer search: local only (no Bing, no web)", "uk": "Пошук у Пуску/Провіднику: лише локально (без Bing, без вебу)" },
+      "description": { "en": "Search box no longer sends keystrokes to Bing; removes web results and Cortana consent.", "uk": "Поле пошуку не надсилає натискання в Bing; без веб-результатів і згоди Cortana." },
+      "risk": "safe", "weight": 2, "tags": ["privacy", "recommended"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer", "name": "DisableSearchBoxSuggestions", "value": 1 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search", "name": "BingSearchEnabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search", "name": "CortanaConsent", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "name": "DisableWebSearch", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "name": "ConnectedSearchUseWeb", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "name": "AllowCortana", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "name": "AllowCloudSearch", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\SearchSettings", "name": "IsDeviceSearchHistoryEnabled", "value": 0 }
+      ]
+    },
+    {
+      "id": "explorer.store-search-suggestions-off",
+      "name": { "en": "Disable Microsoft Store suggestions in search", "uk": "Вимкнути пропозиції Microsoft Store у пошуку" },
+      "description": { "en": "Search stops suggesting 'Install X from the Store' for apps you don't have (deny-ACL on store.db, Win11Debloat technique).", "uk": "Пошук перестає пропонувати «Встановити X зі Store» для відсутніх програм (Deny-ACL на store.db)." },
+      "risk": "moderate", "weight": 1, "tags": ["ads"], "minBuild": 22621,
+      "actions": [
+        { "type": "powershell",
+          "apply": "$p=\"$env:LOCALAPPDATA\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db\"; $d=Split-Path $p; if(-not (Test-Path $d)){New-Item $d -ItemType Directory -Force|Out-Null}; if(-not (Test-Path $p)){New-Item $p -ItemType File -Force|Out-Null}; $acl=Get-Acl $p; $rule=New-Object System.Security.AccessControl.FileSystemAccessRule('Everyone','FullControl','Deny'); $acl.AddAccessRule($rule); Set-Acl $p $acl",
+          "revert": "$p=\"$env:LOCALAPPDATA\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db\"; if(Test-Path $p){ $acl=Get-Acl $p; $acl.Access | Where-Object { $_.AccessControlType -eq 'Deny' -and $_.IdentityReference -eq 'Everyone' } | ForEach-Object { $acl.RemoveAccessRule($_) | Out-Null }; Set-Acl $p $acl; Remove-Item $p -Force -ErrorAction SilentlyContinue }" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "id": "developer", "order": 5, "icon": "💻",
+  "name": { "en": "Developer", "uk": "Розробник" },
+  "description": { "en": "Balanced + dev mode, long paths, WSL2, Sandbox, verbose boot, detailed BSOD, extensions shown, classic context menu, no auto-reboot, fast timeouts.", "uk": "Збалансований + режим розробника, довгі шляхи, WSL2, Sandbox, детальне завантаження і BSOD, розширення файлів, класичне меню, без авто-перезавантажень." },
+  "include": [ "tag:recommended", "adv.dev-mode", "adv.wsl", "adv.windows-sandbox", "ui.verbose-logon", "ui.detailed-bsod", "explorer.show-extensions", "explorer.open-this-pc", "explorer.copy-move-to", "perf.app-timeouts", "perf.menu-delay", "updates.no-auto-reboot", "power.fast-startup-off", "adv.crash-dump-small" ],
+  "exclude": [ "bloat.teams-outlook" ]
+}

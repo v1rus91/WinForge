@@ -1,0 +1,150 @@
+{
+  "category": "ai",
+  "tweaks": [
+    {
+      "id": "ai.copilot",
+      "name": { "en": "Disable Copilot & remove the Copilot app", "uk": "Вимкнути Copilot і видалити застосунок Copilot" },
+      "description": { "en": "Policy-disables Windows Copilot, hides the taskbar button, blocks the shell extension and uninstalls the Microsoft.Copilot store package.", "uk": "Вимикає Windows Copilot політикою, ховає кнопку на панелі, блокує розширення оболонки та видаляє пакет Microsoft.Copilot." },
+      "risk": "safe", "weight": 3, "tags": ["ai", "recommended"], "minBuild": 22621, "restartExplorer": true, "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot", "name": "TurnOffWindowsCopilot", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot", "name": "TurnOffWindowsCopilot", "value": 1 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "name": "ShowCopilotButton", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Blocked", "name": "{64134153-2E11-492F-8181-314091BA79A3}", "value": "Copilot", "kind": "String" },
+        { "type": "appx", "name": "Microsoft.Copilot" },
+        { "type": "appx", "name": "Microsoft.Windows.Copilot" },
+        { "type": "appx", "name": "MicrosoftWindows.Client.Copilot" },
+        { "type": "appx", "name": "Microsoft.Windows.Ai.Copilot.Provider" }
+      ],
+      "detect": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot", "name": "TurnOffWindowsCopilot", "value": 1 },
+        { "type": "appx", "name": "Microsoft.Copilot" }
+      ]
+    },
+    {
+      "id": "ai.recall",
+      "name": { "en": "Disable Windows Recall & snapshot saving", "uk": "Вимкнути Windows Recall і збереження знімків" },
+      "description": { "en": "Blocks Recall enablement by policy, turns off snapshot saving and AI data analysis, disables Recall scheduled tasks and removes the optional feature.", "uk": "Блокує ввімкнення Recall політикою, вимикає збереження знімків та AI-аналіз, вимикає заплановані завдання Recall і видаляє необов’язковий компонент." },
+      "risk": "safe", "weight": 3, "tags": ["ai", "recommended", "recall"], "minBuild": 26100, "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI", "name": "DisableAIDataAnalysis", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI", "name": "DisableAIDataAnalysis", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI", "name": "AllowRecallEnablement", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI", "name": "TurnOffSavingSnapshots", "value": 1 },
+        { "type": "task", "path": "\\Microsoft\\Windows\\WindowsAI\\Recall\\", "name": "InitialConfiguration" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\WindowsAI\\Recall\\", "name": "PolicyConfiguration" },
+        { "type": "feature", "name": "Recall", "state": "Disabled" }
+      ],
+      "detect": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI", "name": "AllowRecallEnablement", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI", "name": "DisableAIDataAnalysis", "value": 1 }
+      ]
+    },
+    {
+      "id": "ai.click-to-do",
+      "name": { "en": "Disable Click to Do", "uk": "Вимкнути Click to Do" },
+      "description": { "en": "Turns off the on-screen AI action overlay (Win+Click) on Copilot+ PCs.", "uk": "Вимикає накладення AI-дій на екрані (Win+клік) на Copilot+ ПК." },
+      "risk": "safe", "weight": 1, "tags": ["ai"], "minBuild": 26100, "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI", "name": "DisableClickToDo", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI", "name": "DisableClickToDo", "value": 1 }
+      ]
+    },
+    {
+      "id": "ai.agents-connectors",
+      "name": { "en": "Disable AI agents, connectors & Windows Intelligence", "uk": "Вимкнути AI-агентів, конектори та Windows Intelligence" },
+      "description": { "en": "25H2 agentic features: blocks agent connectors, AI data collection, Settings 'AI components' page and the Windows Intelligence policy.", "uk": "Агентні функції 25H2: блокує конектори агентів, збір AI-даних, сторінку «AI-компоненти» в Параметрах і політику Windows Intelligence." },
+      "risk": "safe", "weight": 2, "tags": ["ai"], "minBuild": 26100,
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI", "name": "DisableAgentConnectors", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI", "name": "DisableAIDataCollection", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Intelligence", "name": "AllowWindowsIntelligence", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\generativeAI", "name": "Value", "value": "Deny", "kind": "String" },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\systemAIModels", "name": "Value", "value": "Deny", "kind": "String" }
+      ]
+    },
+    {
+      "id": "ai.fabric-service",
+      "name": { "en": "Disable AI Fabric service (WSAIFabricSvc) autostart", "uk": "Вимкнути автозапуск служби AI Fabric (WSAIFabricSvc)" },
+      "description": { "en": "Sets the Windows AI Fabric service to Manual so it does not run at boot unless something requests it.", "uk": "Переводить службу Windows AI Fabric у ручний режим — не стартує при завантаженні без запиту." },
+      "risk": "safe", "weight": 1, "tags": ["ai", "service"], "minBuild": 26100,
+      "actions": [
+        { "type": "service", "name": "WSAIFabricSvc", "startup": "Manual" },
+        { "type": "service", "name": "AiFabric", "startup": "Manual" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\WindowsAI\\", "name": "AIHost" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\WindowsAI\\", "name": "AIFeedback" }
+      ],
+      "detect": [ { "type": "service", "name": "WSAIFabricSvc", "startup": "Manual" } ]
+    },
+    {
+      "id": "ai.paint",
+      "name": { "en": "Disable AI features in Paint", "uk": "Вимкнути AI-функції у Paint" },
+      "description": { "en": "Cocreator, Image Creator, Generative Fill/Erase and Remove Background are hidden.", "uk": "Приховує Cocreator, Image Creator, генеративне заповнення/стирання та видалення фону." },
+      "risk": "safe", "weight": 1, "tags": ["ai"], "minBuild": 22621,
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint", "name": "DisableCocreator", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint", "name": "DisableGenerativeFill", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint", "name": "DisableImageCreator", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint", "name": "DisableGenerativeErase", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint", "name": "DisableRemoveBackground", "value": 1 }
+      ]
+    },
+    {
+      "id": "ai.notepad",
+      "name": { "en": "Disable AI features in Notepad", "uk": "Вимкнути AI-функції у Блокноті" },
+      "description": { "en": "Removes the Rewrite/Summarize Copilot button from Notepad.", "uk": "Прибирає кнопку Rewrite/Summarize (Copilot) із Блокнота." },
+      "risk": "safe", "weight": 1, "tags": ["ai"], "minBuild": 22621, "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\WindowsNotepad", "name": "DisableAIFeatures", "value": 1 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Notepad", "name": "ShowRewriteButton", "value": 0 }
+      ]
+    },
+    {
+      "id": "ai.edge-copilot",
+      "name": { "en": "Disable Copilot & AI in Microsoft Edge", "uk": "Вимкнути Copilot та AI у Microsoft Edge" },
+      "description": { "en": "Removes the Copilot sidebar, page-context sharing, AI history search, Compose and Bing Chat on the new tab page.", "uk": "Прибирає бічну панель Copilot, передачу контексту сторінки, AI-пошук в історії, Compose і Bing Chat на новій вкладці." },
+      "risk": "safe", "weight": 1, "tags": ["ai", "edge"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "HubsSidebarEnabled", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "CopilotCDPPageContext", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "CopilotPageContext", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "EdgeEntraCopilotPageContext", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "EdgeHistoryAISearchEnabled", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "ComposeInlineEnabled", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "GenAILocalFoundationalModelSettings", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge", "name": "NewTabPageBingChatEnabled", "value": 0 }
+      ]
+    },
+    {
+      "id": "ai.gaming-copilot",
+      "name": { "en": "Disable Gaming Copilot in Game Bar", "uk": "Вимкнути Gaming Copilot у Game Bar" },
+      "description": { "en": "Removes the Copilot widget from the Xbox Game Bar overlay.", "uk": "Прибирає віджет Copilot із накладення Xbox Game Bar." },
+      "risk": "safe", "weight": 1, "tags": ["ai", "gaming"], "minBuild": 26100, "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\GameBar", "name": "UseGamingCopilot", "value": 0 }
+      ]
+    },
+    {
+      "id": "ai.input-insights",
+      "name": { "en": "Disable Input Insights (typing telemetry for AI)", "uk": "Вимкнути Input Insights (телеметрія набору для AI)" },
+      "description": { "en": "Disables the InputInsights scheduled task and the text-input insights setting.", "uk": "Вимикає заплановане завдання InputInsights та параметр «інсайти» текстового введення." },
+      "risk": "safe", "weight": 1, "tags": ["ai", "telemetry"], "minBuild": 26100, "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Input\\Settings", "name": "InsightsEnabled", "value": 0 },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Input\\", "name": "InputInsights" }
+      ]
+    },
+    {
+      "id": "ai.settings-pages",
+      "name": { "en": "Hide 'AI components' & 'App actions' in Settings", "uk": "Сховати «AI-компоненти» та «Дії застосунків» у Параметрах" },
+      "description": { "en": "Adds hide:aicomponents;appactions to the Settings page visibility policy.", "uk": "Додає hide:aicomponents;appactions до політики видимості сторінок Параметрів." },
+      "risk": "moderate", "weight": 0, "tags": ["ai", "ui"], "minBuild": 26100,
+      "actions": [
+        { "type": "powershell",
+          "apply": "$k='HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer'; if(-not (Test-Path $k)){New-Item $k -Force|Out-Null}; $v=(Get-ItemProperty $k -Name SettingsPageVisibility -ErrorAction SilentlyContinue).SettingsPageVisibility; if(-not $v){$v='hide:'}; foreach($p in 'aicomponents','appactions'){ if($v -notmatch \"(^|;|:)$p(;|$)\"){ $v = $v.TrimEnd(';') + (if($v -match ':$'){''}else{';'}) + $p } }; Set-ItemProperty $k -Name SettingsPageVisibility -Value $v -Type String",
+          "revert": "$k='HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer'; $v=(Get-ItemProperty $k -Name SettingsPageVisibility -ErrorAction SilentlyContinue).SettingsPageVisibility; if($v){ $v=($v -replace ';?aicomponents','' -replace ';?appactions','' -replace 'hide:;','hide:'); if($v -eq 'hide:'){Remove-ItemProperty $k -Name SettingsPageVisibility -ErrorAction SilentlyContinue}else{Set-ItemProperty $k -Name SettingsPageVisibility -Value $v} }" }
+      ],
+      "detect": [ { "type": "registryMatch", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", "name": "SettingsPageVisibility", "pattern": "aicomponents" } ]
+    }
+  ]
+}

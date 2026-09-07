@@ -1,0 +1,106 @@
+{
+  "category": "advanced",
+  "tweaks": [
+    {
+      "id": "adv.vbs-off",
+      "name": { "en": "Disable VBS / Memory Integrity (HVCI)", "uk": "Вимкнути VBS / Цілісність пам’яті (HVCI)" },
+      "description": { "en": "Up to 5-15 % more FPS on some CPUs at the cost of kernel exploit protection. Breaks nothing else; WSL2/Hyper-V keep working. Not possible if UEFI locks VBS.", "uk": "До 5-15 % FPS на деяких CPU ціною захисту ядра. WSL2/Hyper-V працюють. Неможливо, якщо UEFI блокує VBS." },
+      "risk": "advanced", "weight": 0, "tags": ["gaming", "security-tradeoff"], "reboot": true,
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity", "name": "Enabled", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard", "name": "EnableVirtualizationBasedSecurity", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\KernelShadowStacks", "name": "Enabled", "value": 0 }
+      ]
+    },
+    {
+      "id": "adv.spectre-meltdown-off",
+      "name": { "en": "Disable Spectre/Meltdown CPU mitigations", "uk": "Вимкнути пом’якшення Spectre/Meltdown" },
+      "description": { "en": "FeatureSettingsOverride = 3. Noticeable I/O and syscall speedup on older Intel CPUs. Reduces security against side-channel attacks.", "uk": "FeatureSettingsOverride = 3. Помітне прискорення I/O та syscall на старіших Intel. Знижує захист від side-channel атак." },
+      "risk": "advanced", "weight": 0, "tags": ["cpu", "security-tradeoff"], "reboot": true,
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "name": "FeatureSettingsOverride", "value": 3 },
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "name": "FeatureSettingsOverrideMask", "value": 3 }
+      ]
+    },
+    {
+      "id": "adv.legacy-boot-menu",
+      "name": { "en": "Legacy F8 boot menu", "uk": "Класичне меню завантаження F8" },
+      "description": { "en": "Text-mode boot menu with Safe Mode via F8 (slower boot by ~1 s).", "uk": "Текстове меню завантаження з безпечним режимом по F8 (завантаження на ~1 с довше)." },
+      "risk": "moderate", "weight": 0, "tags": ["boot"],
+      "actions": [
+        { "type": "command", "apply": "bcdedit /set {default} bootmenupolicy legacy", "revert": "bcdedit /set {default} bootmenupolicy standard" }
+      ],
+      "detect": [ { "type": "commandMatch", "command": "bcdedit /enum {default}", "pattern": "bootmenupolicy\\s+Legacy" } ]
+    },
+    {
+      "id": "adv.compact-os",
+      "name": { "en": "CompactOS: compress system files (saves 2-3 GB)", "uk": "CompactOS: стиснути системні файли (економить 2-3 ГБ)" },
+      "description": { "en": "Transparent XPRESS compression of the Windows folder. Negligible CPU cost on modern hardware, great on small SSDs.", "uk": "Прозоре стиснення XPRESS теки Windows. Мізерне навантаження на сучасному залізі, чудово для малих SSD." },
+      "risk": "moderate", "weight": 0, "tags": ["disk"],
+      "actions": [
+        { "type": "command", "apply": "compact.exe /compactos:always", "revert": "compact.exe /compactos:never" }
+      ],
+      "detect": [ { "type": "commandMatch", "command": "compact.exe /compactos:query", "pattern": "is in the Compact state|у компактному стані" } ]
+    },
+    {
+      "id": "adv.crash-dump-small",
+      "name": { "en": "Small memory dumps instead of full kernel dumps", "uk": "Малі дампи пам’яті замість повних дампів ядра" },
+      "description": { "en": "256 KB minidumps on BSOD. Saves gigabytes of disk and shortens crash-reboot time.", "uk": "Мінідампи 256 КБ при BSOD. Економить гігабайти на диску та скорочує час перезавантаження після збою." },
+      "risk": "safe", "weight": 0, "tags": ["disk"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\CrashControl", "name": "CrashDumpEnabled", "value": 3 }
+      ]
+    },
+    {
+      "id": "adv.utc-clock",
+      "name": { "en": "Hardware clock in UTC (dual-boot with Linux/macOS)", "uk": "Апаратний годинник у UTC (dual-boot з Linux/macOS)" },
+      "description": { "en": "Stops the time jumping by your timezone offset when switching OS.", "uk": "Час не стрибає на зміщення часового поясу при перемиканні ОС." },
+      "risk": "safe", "weight": 0, "tags": ["dualboot"], "reboot": true,
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation", "name": "RealTimeIsUniversal", "value": 1, "kind": "QWord" }
+      ]
+    },
+    {
+      "id": "adv.windows-sandbox",
+      "name": { "en": "Enable Windows Sandbox", "uk": "Увімкнути Windows Sandbox" },
+      "description": { "en": "Disposable VM for testing sketchy installers. Requires Pro/Enterprise and virtualization.", "uk": "Одноразова VM для перевірки підозрілих інсталяторів. Потрібні Pro/Enterprise і віртуалізація." },
+      "risk": "safe", "weight": 0, "tags": ["feature"], "reboot": true, "editions": ["Pro", "Enterprise", "Education"],
+      "actions": [
+        { "type": "feature", "name": "Containers-DisposableClientVM", "state": "Enabled" }
+      ]
+    },
+    {
+      "id": "adv.wsl",
+      "name": { "en": "Enable WSL2 prerequisites", "uk": "Увімкнути передумови для WSL2" },
+      "description": { "en": "Virtual Machine Platform + Windows Subsystem for Linux features.", "uk": "Компоненти Virtual Machine Platform та Windows Subsystem for Linux." },
+      "risk": "safe", "weight": 0, "tags": ["feature", "developer"], "reboot": true,
+      "actions": [
+        { "type": "feature", "name": "VirtualMachinePlatform", "state": "Enabled" },
+        { "type": "feature", "name": "Microsoft-Windows-Subsystem-Linux", "state": "Enabled" }
+      ]
+    },
+    {
+      "id": "adv.dev-mode",
+      "name": { "en": "Developer mode, long paths & PowerShell 7 friendly", "uk": "Режим розробника, довгі шляхи та дружність до PowerShell 7" },
+      "description": { "en": "Enables Developer Mode (sideload, symlinks without admin), Win32 long paths, and sets execution policy RemoteSigned.", "uk": "Режим розробника (sideload, символічні посилання без адміна), довгі шляхи Win32, політика виконання RemoteSigned." },
+      "risk": "safe", "weight": 0, "tags": ["developer"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AppModelUnlock", "name": "AllowDevelopmentWithoutDevLicense", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FileSystem", "name": "LongPathsEnabled", "value": 1 },
+        { "type": "powershell", "apply": "Set-ExecutionPolicy RemoteSigned -Scope LocalMachine -Force -ErrorAction SilentlyContinue", "revert": "Set-ExecutionPolicy Restricted -Scope LocalMachine -Force -ErrorAction SilentlyContinue" }
+      ]
+    },
+    {
+      "id": "adv.legacy-photo-viewer",
+      "name": { "en": "Restore Windows Photo Viewer", "uk": "Повернути класичний Переглядач фотографій" },
+      "description": { "en": "Registers the classic viewer for jpg/png/gif/bmp/tiff so it appears in 'Open with'.", "uk": "Реєструє класичний переглядач для jpg/png/gif/bmp/tiff у «Відкрити за допомогою»." },
+      "risk": "safe", "weight": 0, "tags": ["apps"],
+      "actions": [
+        { "type": "powershell",
+          "apply": "$k='HKLM:\\SOFTWARE\\Microsoft\\Windows Photo Viewer\\Capabilities\\FileAssociations'; if(-not (Test-Path $k)){New-Item $k -Force|Out-Null}; foreach($e in '.jpg','.jpeg','.png','.gif','.bmp','.tif','.tiff','.jfif','.dib','.wdp'){ Set-ItemProperty $k -Name $e -Value 'PhotoViewer.FileAssoc.Tiff' -Type String }",
+          "revert": "Remove-Item 'HKLM:\\SOFTWARE\\Microsoft\\Windows Photo Viewer\\Capabilities\\FileAssociations' -Recurse -Force -ErrorAction SilentlyContinue" }
+      ],
+      "detect": [ { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows Photo Viewer\\Capabilities\\FileAssociations", "name": ".png", "value": "PhotoViewer.FileAssoc.Tiff" } ]
+    }
+  ]
+}

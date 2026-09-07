@@ -1,0 +1,226 @@
+{
+  "category": "privacy",
+  "tweaks": [
+    {
+      "id": "privacy.telemetry",
+      "name": { "en": "Disable telemetry & diagnostic data", "uk": "Вимкнути телеметрію та діагностичні дані" },
+      "description": { "en": "Sets diagnostic data to Security level via policy, disables DiagTrack service, autologger, and the compatibility/CEIP scheduled tasks.", "uk": "Рівень діагностики «Безпека» через політику, вимикає службу DiagTrack, autologger та завдання сумісності/CEIP." },
+      "risk": "safe", "weight": 3, "tags": ["telemetry", "recommended"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection", "name": "AllowTelemetry", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection", "name": "AllowTelemetry", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection", "name": "AllowDeviceNameInTelemetry", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection", "name": "DoNotShowFeedbackNotifications", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\WMI\\Autologger\\AutoLogger-Diagtrack-Listener", "name": "Start", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\WMI\\Autologger\\Diagtrack-Listener", "name": "Start", "value": 0 },
+        { "type": "service", "name": "DiagTrack", "startup": "Disabled" },
+        { "type": "service", "name": "dmwappushservice", "startup": "Disabled" },
+        { "type": "service", "name": "diagsvc", "startup": "Disabled" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Application Experience\\", "name": "Microsoft Compatibility Appraiser" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Application Experience\\", "name": "Microsoft Compatibility Appraiser Exp" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Application Experience\\", "name": "ProgramDataUpdater" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Application Experience\\", "name": "StartupAppTask" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Application Experience\\", "name": "PcaPatchDbTask" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Application Experience\\", "name": "MareBackup" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Customer Experience Improvement Program\\", "name": "Consolidator" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Customer Experience Improvement Program\\", "name": "UsbCeip" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\DiskDiagnostic\\", "name": "Microsoft-Windows-DiskDiagnosticDataCollector" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Autochk\\", "name": "Proxy" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Feedback\\Siuf\\", "name": "DmClient" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Feedback\\Siuf\\", "name": "DmClientOnScenarioDownload" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\Windows Error Reporting\\", "name": "QueueReporting" },
+        { "type": "task", "path": "\\Microsoft\\Windows\\NetTrace\\", "name": "GatherNetworkInfo" }
+      ],
+      "detect": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection", "name": "AllowTelemetry", "value": 0 },
+        { "type": "service", "name": "DiagTrack", "startup": "Disabled" }
+      ]
+    },
+    {
+      "id": "privacy.advertising-id",
+      "name": { "en": "Disable advertising ID & tailored experiences", "uk": "Вимкнути рекламний ідентифікатор і персоналізований досвід" },
+      "description": { "en": "Stops apps from using your advertising ID and Windows from using diagnostic data for tailored tips and ads.", "uk": "Забороняє програмам використовувати рекламний ID, а Windows — діагностику для персональних порад і реклами." },
+      "risk": "safe", "weight": 2, "tags": ["ads", "recommended"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo", "name": "Enabled", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo", "name": "DisabledByGroupPolicy", "value": 1 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Privacy", "name": "TailoredExperiencesWithDiagnosticDataEnabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Personalization\\Settings", "name": "AcceptedPrivacyPolicy", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent", "name": "DisableTailoredExperiencesWithDiagnosticData", "value": 1 }
+      ]
+    },
+    {
+      "id": "privacy.activity-history",
+      "name": { "en": "Disable activity history & timeline upload", "uk": "Вимкнути історію активності та її надсилання" },
+      "description": { "en": "Windows stops collecting your app/document activity and publishing it to Microsoft.", "uk": "Windows перестає збирати активність у програмах/документах і надсилати її Microsoft." },
+      "risk": "safe", "weight": 2, "tags": ["telemetry"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System", "name": "PublishUserActivities", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System", "name": "EnableActivityFeed", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System", "name": "UploadUserActivities", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "name": "Start_TrackProgs", "value": 0 }
+      ]
+    },
+    {
+      "id": "privacy.input-personalization",
+      "name": { "en": "Disable typing/inking data collection & online speech", "uk": "Вимкнути збір даних набору/рукопису та онлайн-розпізнавання мови" },
+      "description": { "en": "Stops harvesting of typing, handwriting and contacts for personalization; disables cloud speech recognition consent.", "uk": "Зупиняє збір даних набору, рукопису та контактів для персоналізації; вимикає згоду на хмарне розпізнавання мови." },
+      "risk": "safe", "weight": 2, "tags": ["telemetry"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\InputPersonalization", "name": "RestrictImplicitInkCollection", "value": 1 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\InputPersonalization", "name": "RestrictImplicitTextCollection", "value": 1 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\InputPersonalization\\TrainedDataStore", "name": "HarvestContacts", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Input\\TIPC", "name": "Enabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Speech_OneCore\\Settings\\OnlineSpeechPrivacy", "name": "HasAccepted", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\TabletPC", "name": "PreventHandwritingDataSharing", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\HandwritingErrorReports", "name": "PreventHandwritingErrorReports", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\InputPersonalization", "name": "AllowInputPersonalization", "value": 0 }
+      ]
+    },
+    {
+      "id": "privacy.feedback",
+      "name": { "en": "Disable feedback requests", "uk": "Вимкнути запити на відгук" },
+      "description": { "en": "Windows will never ask 'How likely are you to recommend...'.", "uk": "Windows більше не питатиме «Наскільки ймовірно, що ви порекомендуєте…»." },
+      "risk": "safe", "weight": 1, "tags": ["annoyance"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Siuf\\Rules", "name": "NumberOfSIUFInPeriod", "value": 0 },
+        { "type": "registryDelete", "path": "HKCU:\\SOFTWARE\\Microsoft\\Siuf\\Rules", "name": "PeriodInNanoSeconds" }
+      ]
+    },
+    {
+      "id": "privacy.error-reporting",
+      "name": { "en": "Disable Windows Error Reporting", "uk": "Вимкнути звіти про помилки Windows" },
+      "description": { "en": "No crash reports are sent to Microsoft; the WER service is disabled.", "uk": "Звіти про збої не надсилаються Microsoft; служба WER вимкнена." },
+      "risk": "safe", "weight": 1, "tags": ["telemetry"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Error Reporting", "name": "Disabled", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting", "name": "Disabled", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting", "name": "DontSendAdditionalData", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\Consent", "name": "DefaultConsent", "value": 0 },
+        { "type": "service", "name": "WerSvc", "startup": "Disabled" },
+        { "type": "service", "name": "wercplsupport", "startup": "Disabled" }
+      ]
+    },
+    {
+      "id": "privacy.location",
+      "name": { "en": "Disable location services & Find My Device", "uk": "Вимкнути служби розташування та «Знайти пристрій»" },
+      "description": { "en": "Turns off location access for the system and apps, the geolocation service and Find My Device.", "uk": "Вимикає доступ до розташування для системи та застосунків, службу геолокації і «Знайти пристрій»." },
+      "risk": "moderate", "weight": 2, "tags": ["location"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\LocationAndSensors", "name": "DisableLocation", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\LocationAndSensors", "name": "DisableLocationScripting", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location", "name": "Value", "value": "Deny", "kind": "String" },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\FindMyDevice", "name": "AllowFindMyDevice", "value": 0 },
+        { "type": "service", "name": "lfsvc", "startup": "Disabled" }
+      ]
+    },
+    {
+      "id": "privacy.app-permissions",
+      "name": { "en": "Deny background app access to camera/mic/contacts/etc. (system-wide)", "uk": "Заборонити фоновий доступ до камери/мікрофона/контактів тощо (для системи)" },
+      "description": { "en": "Sets ConsentStore defaults to Deny for account info, contacts, calendar, call history, email, tasks, messaging, radios, app diagnostics and documents. Camera and microphone are left as-is.", "uk": "Ставить Deny у ConsentStore для інформації облікового запису, контактів, календаря, історії дзвінків, пошти, завдань, повідомлень, радіо, діагностики застосунків і документів. Камеру і мікрофон не чіпає." },
+      "risk": "moderate", "weight": 2, "tags": ["permissions"],
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\userAccountInformation", "name": "Value", "value": "Deny", "kind": "String" },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\contacts", "name": "Value", "value": "Deny", "kind": "String" },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\appointments", "name": "Value", "value": "Deny", "kind": "String" },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\phoneCallHistory", "name": "Value", "value": "Deny", "kind": "String" },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\email", "name": "Value", "value": "Deny", "kind": "String" },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\userDataTasks", "name": "Value", "value": "Deny", "kind": "String" },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\chat", "name": "Value", "value": "Deny", "kind": "String" },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\radios", "name": "Value", "value": "Deny", "kind": "String" },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\appDiagnostics", "name": "Value", "value": "Deny", "kind": "String" },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\documentsLibrary", "name": "Value", "value": "Deny", "kind": "String" }
+      ]
+    },
+    {
+      "id": "privacy.wifi-sense",
+      "name": { "en": "Disable Wi-Fi Sense hotspot sharing", "uk": "Вимкнути Wi-Fi Sense (обмін хот-спотами)" },
+      "description": { "en": "Prevents automatic connection to suggested open hotspots and hotspot reporting.", "uk": "Забороняє автопідключення до запропонованих відкритих хот-спотів та звітування про них." },
+      "risk": "safe", "weight": 1, "tags": ["network"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\default\\WiFi\\AllowWiFiHotSpotReporting", "name": "Value", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\default\\WiFi\\AllowAutoConnectToWiFiSenseHotspots", "name": "Value", "value": 0 }
+      ]
+    },
+    {
+      "id": "privacy.cloud-clipboard-sync",
+      "name": { "en": "Disable clipboard & settings sync to the cloud", "uk": "Вимкнути синхронізацію буфера обміну та налаштувань з хмарою" },
+      "description": { "en": "Clipboard history stays local; Windows settings sync to Microsoft account is disabled.", "uk": "Історія буфера залишається локальною; синхронізація налаштувань з обліковим записом Microsoft вимкнена." },
+      "risk": "moderate", "weight": 1, "tags": ["sync"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System", "name": "AllowCrossDeviceClipboard", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Clipboard", "name": "CloudClipboardAutomaticUpload", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\SettingSync", "name": "DisableSettingSync", "value": 2 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\SettingSync", "name": "DisableSettingSyncUserOverride", "value": 1 }
+      ]
+    },
+    {
+      "id": "privacy.app-launch-tracking",
+      "name": { "en": "Disable app launch tracking & inventory", "uk": "Вимкнути відстеження запусків програм та інвентаризацію" },
+      "description": { "en": "Application Compatibility inventory and telemetry agents (AIT) are turned off.", "uk": "Інвентаризацію сумісності застосунків та агентів телеметрії (AIT) вимкнено." },
+      "risk": "safe", "weight": 1, "tags": ["telemetry"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AppCompat", "name": "DisableInventory", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AppCompat", "name": "AITEnable", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AppCompat", "name": "DisableUAR", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AppCompat", "name": "DisablePCA", "value": 1 }
+      ]
+    },
+    {
+      "id": "privacy.experiments",
+      "name": { "en": "Disable Windows experiments & CEIP", "uk": "Вимкнути експерименти Windows та CEIP" },
+      "description": { "en": "Opts out of Microsoft experimentation rollouts and the Customer Experience Improvement Program.", "uk": "Відмова від експериментальних розгортань Microsoft та програми покращення якості (CEIP)." },
+      "risk": "safe", "weight": 1, "tags": ["telemetry"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\System", "name": "AllowExperimentation", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\SQMClient\\Windows", "name": "CEIPEnable", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\SettingSync", "name": "DisableSettingSyncFromAppRating", "value": 1 }
+      ]
+    },
+    {
+      "id": "privacy.speech-model-updates",
+      "name": { "en": "Disable automatic speech model downloads", "uk": "Вимкнути автозавантаження мовних моделей" },
+      "description": { "en": "Stops Windows from silently downloading updated speech recognition models.", "uk": "Windows не завантажуватиме тихо оновлені моделі розпізнавання мовлення." },
+      "risk": "safe", "weight": 1, "tags": ["background"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Speech", "name": "AllowSpeechModelUpdate", "value": 0 }
+      ]
+    },
+    {
+      "id": "privacy.cdp-user-service",
+      "name": { "en": "Disable Connected Devices Platform user service (CDPUserSvc)", "uk": "Вимкнути службу платформи підключених пристроїв (CDPUserSvc)" },
+      "description": { "en": "Cross-device 'continue on PC' plumbing that phones home. Breaks Phone Link / Nearby Share.", "uk": "Міжпристроєвий сервіс «продовжити на ПК», що стукає додому. Ламає Phone Link / Обмін поруч." },
+      "risk": "moderate", "weight": 1, "tags": ["service"],
+      "actions": [
+        { "type": "service", "name": "CDPUserSvc", "startup": "Disabled" }
+      ]
+    },
+    {
+      "id": "privacy.nvidia-telemetry",
+      "name": { "en": "Disable NVIDIA telemetry", "uk": "Вимкнути телеметрію NVIDIA" },
+      "description": { "en": "Disables the NvTelemetryContainer service and its scheduled report tasks (only if NVIDIA drivers are installed).", "uk": "Вимикає службу NvTelemetryContainer та її заплановані звіти (лише якщо встановлені драйвери NVIDIA)." },
+      "risk": "safe", "weight": 1, "tags": ["telemetry", "gpu"],
+      "actions": [
+        { "type": "service", "name": "NvTelemetryContainer", "startup": "Disabled" },
+        { "type": "task", "path": "\\", "name": "NvTmRep_CrashReport1_{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8}" },
+        { "type": "task", "path": "\\", "name": "NvTmRep_CrashReport2_{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8}" },
+        { "type": "task", "path": "\\", "name": "NvTmRep_CrashReport3_{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8}" },
+        { "type": "task", "path": "\\", "name": "NvTmRep_CrashReport4_{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8}" },
+        { "type": "task", "path": "\\", "name": "NvTmMon_{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8}" }
+      ],
+      "detect": [ { "type": "service", "name": "NvTelemetryContainer", "startup": "Disabled" } ]
+    },
+    {
+      "id": "privacy.telemetry-hosts",
+      "name": { "en": "Block telemetry domains in hosts file", "uk": "Блокувати домени телеметрії у файлі hosts" },
+      "description": { "en": "Appends a curated block of Microsoft telemetry endpoints to C:\\Windows\\System32\\drivers\\etc\\hosts (marked with WinForge tags; removable). Does not touch Windows Update or Store domains.", "uk": "Додає перевірений блок доменів телеметрії Microsoft у hosts (позначено тегами WinForge; можна прибрати). Не чіпає Windows Update та Store." },
+      "risk": "advanced", "weight": 0, "tags": ["telemetry", "hosts"],
+      "actions": [
+        { "type": "powershell",
+          "apply": "$h=\"$env:SystemRoot\\System32\\drivers\\etc\\hosts\"; $c=Get-Content $h -Raw -ErrorAction SilentlyContinue; if($c -notmatch '# WinForge-telemetry-begin'){ $d='vortex.data.microsoft.com','vortex-win.data.microsoft.com','telecommand.telemetry.microsoft.com','telecommand.telemetry.microsoft.com.nsatc.net','oca.telemetry.microsoft.com','sqm.telemetry.microsoft.com','watson.telemetry.microsoft.com','redir.metaservices.microsoft.com','choice.microsoft.com','df.telemetry.microsoft.com','reports.wes.df.telemetry.microsoft.com','wes.df.telemetry.microsoft.com','services.wes.df.telemetry.microsoft.com','sqm.df.telemetry.microsoft.com','telemetry.microsoft.com','watson.ppe.telemetry.microsoft.com','telemetry.appex.bing.net','telemetry.urs.microsoft.com','settings-sandbox.data.microsoft.com','vortex-sandbox.data.microsoft.com','survey.watson.microsoft.com','watson.live.com','watson.microsoft.com','statsfe2.ws.microsoft.com','corpext.msitadfs.glbdns2.microsoft.com','compatexchange.cloudapp.net','cs1.wpc.v0cdn.net','a-0001.a-msedge.net','statsfe2.update.microsoft.com.akadns.net','diagnostics.support.microsoft.com','corp.sts.microsoft.com','statsfe1.ws.microsoft.com','feedback.windows.com','feedback.microsoft-hohm.com','feedback.search.microsoft.com','v10.events.data.microsoft.com','v10.vortex-win.data.microsoft.com','v20.events.data.microsoft.com','umwatsonc.events.data.microsoft.com','ceuswatcab01.blob.core.windows.net','ceuswatcab02.blob.core.windows.net','eaus2watcab01.blob.core.windows.net','eaus2watcab02.blob.core.windows.net','weus2watcab01.blob.core.windows.net','weus2watcab02.blob.core.windows.net'; $block=\"`r`n# WinForge-telemetry-begin`r`n\" + (($d | ForEach-Object { \"0.0.0.0 $_\" }) -join \"`r`n\") + \"`r`n# WinForge-telemetry-end`r`n\"; Add-Content -Path $h -Value $block -Encoding ASCII; ipconfig /flushdns | Out-Null }",
+          "revert": "$h=\"$env:SystemRoot\\System32\\drivers\\etc\\hosts\"; $c=Get-Content $h -Raw; $c=[regex]::Replace($c,'(?s)\\r?\\n# WinForge-telemetry-begin.*?# WinForge-telemetry-end\\r?\\n',''); Set-Content -Path $h -Value $c -Encoding ASCII -NoNewline; ipconfig /flushdns | Out-Null" }
+      ],
+      "detect": [ { "type": "fileContains", "path": "%SystemRoot%\\System32\\drivers\\etc\\hosts", "pattern": "WinForge-telemetry-begin" } ]
+    }
+  ]
+}

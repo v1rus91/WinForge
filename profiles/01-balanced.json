@@ -1,0 +1,7 @@
+{
+  "id": "balanced", "order": 1, "icon": "⚖️",
+  "name": { "en": "Balanced (recommended)", "uk": "Збалансований (рекомендовано)" },
+  "description": { "en": "Everything tagged 'recommended': telemetry off, ads gone, junk apps removed, Copilot/Recall off, sane defaults. Zero functionality loss.", "uk": "Усе з тегом «recommended»: без телеметрії, без реклами, без сміттєвих застосунків, Copilot/Recall вимкнено. Без втрати функціональності." },
+  "include": [ "tag:recommended" ],
+  "exclude": []
+}

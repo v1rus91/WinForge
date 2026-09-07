@@ -1,0 +1,136 @@
+{
+  "category": "gaming",
+  "tweaks": [
+    {
+      "id": "gaming.game-mode",
+      "name": { "en": "Enable Game Mode", "uk": "Увімкнути Ігровий режим" },
+      "description": { "en": "Windows prioritises the game and pauses Windows Update driver installs/notifications while playing.", "uk": "Windows дає пріоритет грі та призупиняє встановлення драйверів/сповіщення оновлень під час гри." },
+      "risk": "safe", "weight": 1, "tags": ["gaming"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\GameBar", "name": "AllowAutoGameMode", "value": 1 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\GameBar", "name": "AutoGameModeEnabled", "value": 1 }
+      ]
+    },
+    {
+      "id": "gaming.hags",
+      "name": { "en": "Enable Hardware-Accelerated GPU Scheduling", "uk": "Увімкнути апаратне планування GPU (HAGS)" },
+      "description": { "en": "GPU manages its own VRAM scheduling; lowers latency on modern NVIDIA/AMD/Intel Arc drivers. Required for DLSS 3 frame generation.", "uk": "GPU сам керує плануванням пам’яті; нижча затримка на сучасних драйверах NVIDIA/AMD/Intel Arc. Потрібно для DLSS 3 Frame Generation." },
+      "risk": "safe", "weight": 1, "tags": ["gpu"], "reboot": true,
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers", "name": "HwSchMode", "value": 2 }
+      ]
+    },
+    {
+      "id": "gaming.windowed-optimizations",
+      "name": { "en": "Enable optimisations for windowed games", "uk": "Увімкнути оптимізації для віконних ігор" },
+      "description": { "en": "Flip-model swap-effect upgrade for DX10/11 windowed and borderless games: lower latency, Auto HDR support.", "uk": "Оновлення swap-ефекту до flip-моделі для DX10/11 ігор у вікні/без рамки: нижча затримка, підтримка Auto HDR." },
+      "risk": "safe", "weight": 1, "tags": ["gpu"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\DirectX\\UserGpuPreferences", "name": "DirectXUserGlobalSettings", "value": "SwapEffectUpgradeEnable=1;", "kind": "String" }
+      ]
+    },
+    {
+      "id": "gaming.game-dvr-off",
+      "name": { "en": "Disable Game DVR background recording", "uk": "Вимкнути фоновий запис Game DVR" },
+      "description": { "en": "Turns off the always-on 'record last 30 seconds' capture that costs 5-10 % FPS. Game Bar itself keeps working.", "uk": "Вимикає постійний запис «останніх 30 секунд», що коштує 5-10 % FPS. Сам Game Bar працює." },
+      "risk": "safe", "weight": 2, "tags": ["gaming", "recommended"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\System\\GameConfigStore", "name": "GameDVR_Enabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR", "name": "AppCaptureEnabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR", "name": "HistoricalCaptureEnabled", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR", "name": "AllowGameDVR", "value": 0 }
+      ]
+    },
+    {
+      "id": "gaming.gamebar-popups",
+      "name": { "en": "Silence Game Bar popups (ms-gamebar handler)", "uk": "Прибрати спливаючі вікна Game Bar (обробник ms-gamebar)" },
+      "description": { "en": "Fixes the 'You'll need a new app to open this ms-gamebar' dialog after removing Xbox apps, and stops Game Bar from opening on Win+G.", "uk": "Виправляє діалог «Потрібен новий застосунок для ms-gamebar» після видалення Xbox і не дає Game Bar відкриватися на Win+G." },
+      "risk": "safe", "weight": 1, "tags": ["gaming", "annoyance"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\GameBar", "name": "UseNexusForGameBarEnabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\GameBar", "name": "ShowStartupPanel", "value": 0 },
+        { "type": "registry", "path": "HKCR:\\ms-gamebar", "name": "NoOpenWith", "value": "", "kind": "String" },
+        { "type": "registry", "path": "HKCR:\\ms-gamebar", "name": "URL Protocol", "value": "", "kind": "String" },
+        { "type": "registry", "path": "HKCR:\\ms-gamebar\\shell\\open\\command", "name": "(Default)", "value": "\"%SystemRoot%\\System32\\systray.exe\"", "kind": "String" },
+        { "type": "registry", "path": "HKCR:\\ms-gamebarservices", "name": "NoOpenWith", "value": "", "kind": "String" },
+        { "type": "registry", "path": "HKCR:\\ms-gamebarservices", "name": "URL Protocol", "value": "", "kind": "String" },
+        { "type": "registry", "path": "HKCR:\\ms-gamebarservices\\shell\\open\\command", "name": "(Default)", "value": "\"%SystemRoot%\\System32\\systray.exe\"", "kind": "String" }
+      ],
+      "detect": [ { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\GameBar", "name": "UseNexusForGameBarEnabled", "value": 0 } ]
+    },
+    {
+      "id": "gaming.fullscreen-optimizations-off",
+      "name": { "en": "Disable Fullscreen Optimizations globally", "uk": "Вимкнути «Оптимізації повноекранного режиму» глобально" },
+      "description": { "en": "Forces true exclusive fullscreen behaviour for legacy games; can reduce stutter in some DX9/11 titles.", "uk": "Примусово справжній ексклюзивний повноекранний режим для старих ігор; зменшує статери в деяких DX9/11." },
+      "risk": "moderate", "weight": 0, "tags": ["gpu"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\System\\GameConfigStore", "name": "GameDVR_FSEBehaviorMode", "value": 2 },
+        { "type": "registry", "path": "HKCU:\\System\\GameConfigStore", "name": "GameDVR_HonorUserFSEBehaviorMode", "value": 1 },
+        { "type": "registry", "path": "HKCU:\\System\\GameConfigStore", "name": "GameDVR_FSEBehavior", "value": 2 },
+        { "type": "registry", "path": "HKCU:\\System\\GameConfigStore", "name": "GameDVR_DXGIHonorFSEWindowsCompatible", "value": 1 }
+      ]
+    },
+    {
+      "id": "gaming.mouse-acceleration-off",
+      "name": { "en": "Disable mouse acceleration (Enhance pointer precision)", "uk": "Вимкнути прискорення миші (Enhance pointer precision)" },
+      "description": { "en": "1:1 raw mouse movement. Essential for FPS aiming consistency.", "uk": "Рух миші 1:1. Критично для стабільного прицілювання у шутерах." },
+      "risk": "safe", "weight": 1, "tags": ["input"], "reboot": true, "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\Control Panel\\Mouse", "name": "MouseSpeed", "value": "0", "kind": "String" },
+        { "type": "registry", "path": "HKCU:\\Control Panel\\Mouse", "name": "MouseThreshold1", "value": "0", "kind": "String" },
+        { "type": "registry", "path": "HKCU:\\Control Panel\\Mouse", "name": "MouseThreshold2", "value": "0", "kind": "String" }
+      ]
+    },
+    {
+      "id": "gaming.keyboard-repeat",
+      "name": { "en": "Fastest keyboard repeat rate & shortest delay", "uk": "Найшвидший повтор клавіш і найкоротша затримка" },
+      "description": { "en": "KeyboardDelay 0, KeyboardSpeed 31.", "uk": "KeyboardDelay 0, KeyboardSpeed 31." },
+      "risk": "safe", "weight": 0, "tags": ["input"], "reboot": true, "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\Control Panel\\Keyboard", "name": "KeyboardDelay", "value": "0", "kind": "String" },
+        { "type": "registry", "path": "HKCU:\\Control Panel\\Keyboard", "name": "KeyboardSpeed", "value": "31", "kind": "String" }
+      ]
+    },
+    {
+      "id": "gaming.sticky-keys-off",
+      "name": { "en": "Disable Sticky/Filter/Toggle Keys shortcuts", "uk": "Вимкнути гарячі клавіші залипання/фільтрації/перемикання" },
+      "description": { "en": "No more Sticky Keys popup after pressing Shift 5 times mid-game.", "uk": "Більше ніякого вікна залипання клавіш після 5 натискань Shift у грі." },
+      "risk": "safe", "weight": 1, "tags": ["input", "annoyance"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\Control Panel\\Accessibility\\StickyKeys", "name": "Flags", "value": "506", "kind": "String" },
+        { "type": "registry", "path": "HKCU:\\Control Panel\\Accessibility\\Keyboard Response", "name": "Flags", "value": "122", "kind": "String" },
+        { "type": "registry", "path": "HKCU:\\Control Panel\\Accessibility\\ToggleKeys", "name": "Flags", "value": "58", "kind": "String" }
+      ]
+    },
+    {
+      "id": "gaming.mpo-off",
+      "name": { "en": "Disable Multi-Plane Overlay (fixes flicker/stutter)", "uk": "Вимкнути Multi-Plane Overlay (проти мерехтіння/статерів)" },
+      "description": { "en": "Recommended by NVIDIA/AMD for black-screen flicker, stutter and G-Sync issues in windowed games on some GPUs.", "uk": "Рекомендовано NVIDIA/AMD при мерехтінні чорним, статерах і проблемах G-Sync у віконних іграх на деяких GPU." },
+      "risk": "moderate", "weight": 0, "tags": ["gpu"], "reboot": true,
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Dwm", "name": "OverlayTestMode", "value": 5 }
+      ]
+    },
+    {
+      "id": "gaming.gpu-pstate",
+      "name": { "en": "GPU: disable dynamic P-states (NVIDIA/AMD)", "uk": "GPU: вимкнути динамічні P-стани (NVIDIA/AMD)" },
+      "description": { "en": "Keeps the GPU from dropping clocks mid-frame. Writes DisableDynamicPstate / EnableULPS to every display-class driver key. Higher idle power draw.", "uk": "Не дає GPU скидати частоти посеред кадру. Пише DisableDynamicPstate / EnableULPS у ключі всіх драйверів дисплея. Вище споживання в простої." },
+      "risk": "advanced", "weight": 0, "tags": ["gpu"], "reboot": true,
+      "actions": [
+        { "type": "powershell",
+          "apply": "Get-ChildItem 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}' -ErrorAction SilentlyContinue | Where-Object { $_.PSChildName -match '^\\d{4}$' } | ForEach-Object { $d=(Get-ItemProperty $_.PSPath -Name DriverDesc -ErrorAction SilentlyContinue).DriverDesc; if($d -match 'NVIDIA'){ Set-ItemProperty $_.PSPath -Name DisableDynamicPstate -Value 1 -Type DWord; Set-ItemProperty $_.PSPath -Name DisableASyncPstates -Value 1 -Type DWord } elseif($d -match 'AMD|Radeon'){ Set-ItemProperty $_.PSPath -Name EnableULPS -Value 0 -Type DWord; Set-ItemProperty $_.PSPath -Name DisableDynamicPstate -Value 1 -Type DWord; Set-ItemProperty $_.PSPath -Name PP_GPUPowerDownEnabled -Value 0 -Type DWord } }",
+          "revert": "Get-ChildItem 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}' -ErrorAction SilentlyContinue | Where-Object { $_.PSChildName -match '^\\d{4}$' } | ForEach-Object { foreach($n in 'DisableDynamicPstate','DisableASyncPstates','EnableULPS','PP_GPUPowerDownEnabled'){ Remove-ItemProperty $_.PSPath -Name $n -ErrorAction SilentlyContinue } }" }
+      ]
+    },
+    {
+      "id": "gaming.dynamic-tick-off",
+      "name": { "en": "Disable dynamic tick & platform clock (bcdedit)", "uk": "Вимкнути dynamic tick та platform clock (bcdedit)" },
+      "description": { "en": "Legacy timer tweak for frame-time consistency. Can hurt laptops and some 24H2 systems; test before keeping.", "uk": "Класичний твік таймерів для рівних frame-time. Може шкодити ноутбукам та деяким системам на 24H2; протестуйте." },
+      "risk": "advanced", "weight": 0, "tags": ["timer"], "reboot": true,
+      "actions": [
+        { "type": "command", "apply": "bcdedit /set disabledynamictick yes", "revert": "bcdedit /deletevalue disabledynamictick" },
+        { "type": "command", "apply": "bcdedit /deletevalue useplatformclock", "revert": "bcdedit /deletevalue useplatformclock" }
+      ]
+    }
+  ]
+}

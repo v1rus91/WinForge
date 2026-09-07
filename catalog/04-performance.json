@@ -1,0 +1,175 @@
+{
+  "category": "performance",
+  "tweaks": [
+    {
+      "id": "perf.visual-effects",
+      "name": { "en": "Reduce animations & visual effects (keep font smoothing)", "uk": "Зменшити анімації та візуальні ефекти (згладжування шрифтів лишити)" },
+      "description": { "en": "Turns off window/menu animations, fade effects and shadows while keeping ClearType and thumbnails. Big win on integrated GPUs and remote sessions.", "uk": "Вимикає анімації вікон/меню, затухання й тіні, лишаючи ClearType і мініатюри. Помітно на вбудованій графіці та у віддалених сесіях." },
+      "risk": "safe", "weight": 2, "tags": ["ui", "responsiveness"], "reboot": true, "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\Control Panel\\Desktop", "name": "UserPreferencesMask", "value": "90 12 03 80 10 00 00 00", "kind": "Binary" },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects", "name": "VisualFXSetting", "value": 3 },
+        { "type": "registry", "path": "HKCU:\\Control Panel\\Desktop\\WindowMetrics", "name": "MinAnimate", "value": "0", "kind": "String" },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "name": "TaskbarAnimations", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\DWM", "name": "EnableAeroPeek", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\Control Panel\\Desktop", "name": "DragFullWindows", "value": "1", "kind": "String" },
+        { "type": "registry", "path": "HKCU:\\Control Panel\\Desktop", "name": "FontSmoothing", "value": "2", "kind": "String" }
+      ],
+      "detect": [ { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects", "name": "VisualFXSetting", "value": 3 } ]
+    },
+    {
+      "id": "perf.menu-delay",
+      "name": { "en": "Instant menus & hover (MenuShowDelay 0)", "uk": "Миттєві меню та наведення (MenuShowDelay 0)" },
+      "description": { "en": "Removes the 400 ms delay before submenus and tooltips open.", "uk": "Прибирає затримку 400 мс перед відкриттям підменю та підказок." },
+      "risk": "safe", "weight": 1, "tags": ["responsiveness"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\Control Panel\\Desktop", "name": "MenuShowDelay", "value": "0", "kind": "String" },
+        { "type": "registry", "path": "HKCU:\\Control Panel\\Mouse", "name": "MouseHoverTime", "value": "10", "kind": "String" }
+      ]
+    },
+    {
+      "id": "perf.foreground-priority",
+      "name": { "en": "Prioritise foreground apps (Win32PrioritySeparation)", "uk": "Пріоритет активним застосункам (Win32PrioritySeparation)" },
+      "description": { "en": "Sets the scheduler to short, variable quanta with a 3:1 foreground boost (value 38 / 0x26), the classic desktop responsiveness setting.", "uk": "Планувальник на короткі змінні кванти з бустом 3:1 для активного вікна (значення 38 / 0x26) — класичне налаштування чуйності." },
+      "risk": "safe", "weight": 1, "tags": ["cpu", "gaming"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\PriorityControl", "name": "Win32PrioritySeparation", "value": 38 }
+      ]
+    },
+    {
+      "id": "perf.multimedia-profile",
+      "name": { "en": "Multimedia scheduler: no network throttling, max responsiveness", "uk": "Мультимедійний планувальник: без тротлінгу мережі, макс. чуйність" },
+      "description": { "en": "NetworkThrottlingIndex = off, SystemResponsiveness = 10 (reserves less CPU for background), Games task gets High scheduling/GPU priority.", "uk": "NetworkThrottlingIndex вимкнено, SystemResponsiveness = 10 (менше CPU для фону), завдання Games отримує High пріоритет планування/GPU." },
+      "risk": "safe", "weight": 2, "tags": ["gaming", "network", "recommended"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile", "name": "NetworkThrottlingIndex", "value": 4294967295 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile", "name": "SystemResponsiveness", "value": 10 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games", "name": "GPU Priority", "value": 8 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games", "name": "Priority", "value": 6 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games", "name": "Scheduling Category", "value": "High", "kind": "String" },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games", "name": "SFIO Priority", "value": "High", "kind": "String" }
+      ]
+    },
+    {
+      "id": "perf.svchost-split",
+      "name": { "en": "Group svchost processes by RAM size", "uk": "Групувати процеси svchost за обсягом RAM" },
+      "description": { "en": "Raises SvcHostSplitThresholdInKB to your installed RAM so Windows merges dozens of svchost.exe processes into fewer hosts (fewer context switches, less RAM).", "uk": "Підвищує SvcHostSplitThresholdInKB до обсягу вашої RAM — Windows об’єднує десятки svchost.exe у менше процесів (менше перемикань контексту та RAM)." },
+      "risk": "safe", "weight": 1, "tags": ["ram"], "reboot": true,
+      "actions": [
+        { "type": "powershell", "apply": "$kb=[int64][math]::Ceiling((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory/1GB)*1024*1024; Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control' -Name SvcHostSplitThresholdInKB -Value $kb -Type DWord", "revert": "Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control' -Name SvcHostSplitThresholdInKB -Value 380000 -Type DWord" }
+      ],
+      "detect": [ { "type": "registryGreater", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control", "name": "SvcHostSplitThresholdInKB", "value": 4000000 } ]
+    },
+    {
+      "id": "perf.startup-delay",
+      "name": { "en": "Remove startup app delay", "uk": "Прибрати затримку запуску автозавантаження" },
+      "description": { "en": "Windows waits ~10 s after logon before launching startup apps; this removes that wait.", "uk": "Windows чекає ~10 с після входу перед запуском автозавантаження; це прибирає очікування." },
+      "risk": "safe", "weight": 1, "tags": ["boot"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Serialize", "name": "StartupDelayInMSec", "value": 0 }
+      ]
+    },
+    {
+      "id": "perf.app-timeouts",
+      "name": { "en": "Faster shutdown & hung-app timeouts", "uk": "Швидше вимкнення та таймаути зависань" },
+      "description": { "en": "WaitToKillServiceTimeout 2 s, HungAppTimeout 1 s, AutoEndTasks on. Shutdown no longer waits 20 s for stuck apps.", "uk": "WaitToKillServiceTimeout 2 с, HungAppTimeout 1 с, AutoEndTasks увімкнено. Вимкнення не чекає 20 с на зависі застосунки." },
+      "risk": "safe", "weight": 1, "tags": ["boot"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control", "name": "WaitToKillServiceTimeout", "value": "2000", "kind": "String" },
+        { "type": "registry", "path": "HKCU:\\Control Panel\\Desktop", "name": "AutoEndTasks", "value": "1", "kind": "String" },
+        { "type": "registry", "path": "HKCU:\\Control Panel\\Desktop", "name": "HungAppTimeout", "value": "1000", "kind": "String" },
+        { "type": "registry", "path": "HKCU:\\Control Panel\\Desktop", "name": "WaitToKillAppTimeout", "value": "2000", "kind": "String" }
+      ]
+    },
+    {
+      "id": "perf.ntfs",
+      "name": { "en": "NTFS: disable last-access timestamps & 8.3 names", "uk": "NTFS: вимкнути час останнього доступу та імена 8.3" },
+      "description": { "en": "Fewer metadata writes on every file read; 8.3 short-name generation off for new volumes.", "uk": "Менше записів метаданих при кожному читанні файлу; генерацію коротких імен 8.3 вимкнено для нових томів." },
+      "risk": "safe", "weight": 1, "tags": ["disk"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FileSystem", "name": "NtfsDisableLastAccessUpdate", "value": 2147483649 },
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FileSystem", "name": "NtfsDisable8dot3NameCreation", "value": 1 }
+      ]
+    },
+    {
+      "id": "perf.background-apps",
+      "name": { "en": "Stop Store apps running in the background", "uk": "Заборонити Store-застосункам працювати у фоні" },
+      "description": { "en": "Global 'let apps run in background' off. Notifications from those apps may be delayed.", "uk": "Глобально вимикає фонову роботу застосунків. Сповіщення від них можуть затримуватись." },
+      "risk": "safe", "weight": 1, "tags": ["ram", "battery"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications", "name": "GlobalUserDisabled", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AppPrivacy", "name": "LetAppsRunInBackground", "value": 2 }
+      ]
+    },
+    {
+      "id": "perf.sysmain",
+      "name": { "en": "Disable SysMain (Superfetch) on SSD systems", "uk": "Вимкнути SysMain (Superfetch) на SSD" },
+      "description": { "en": "Prefetch/Superfetch gives nothing on NVMe/SSD and causes disk activity spikes. Keep enabled on HDD.", "uk": "Prefetch/Superfetch нічого не дає на NVMe/SSD і спричиняє сплески дискової активності. На HDD лишіть увімкненим." },
+      "risk": "moderate", "weight": 1, "tags": ["disk", "ssd"],
+      "actions": [
+        { "type": "service", "name": "SysMain", "startup": "Disabled" },
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters", "name": "EnableSuperfetch", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters", "name": "EnablePrefetcher", "value": 0 }
+      ]
+    },
+    {
+      "id": "perf.search-indexer",
+      "name": { "en": "Disable Windows Search indexer", "uk": "Вимкнути індексатор Windows Search" },
+      "description": { "en": "Stops SearchIndexer.exe. Start-menu search still works for apps/settings; file content search becomes slower.", "uk": "Зупиняє SearchIndexer.exe. Пошук у Пуску працює для програм/налаштувань; пошук вмісту файлів стає повільнішим." },
+      "risk": "moderate", "weight": 1, "tags": ["disk", "cpu"],
+      "actions": [
+        { "type": "service", "name": "WSearch", "startup": "Disabled" }
+      ]
+    },
+    {
+      "id": "perf.power-throttling-off",
+      "name": { "en": "Disable Power Throttling", "uk": "Вимкнути Power Throttling" },
+      "description": { "en": "Prevents Windows from forcing background processes into low-power CPU states. Better consistency on desktops; hurts laptop battery.", "uk": "Не дає Windows переводити фонові процеси в економні стани CPU. Стабільніше на десктопах; гірше для батареї ноутбука." },
+      "risk": "moderate", "weight": 1, "tags": ["cpu", "desktop"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling", "name": "PowerThrottlingOff", "value": 1 }
+      ]
+    },
+    {
+      "id": "perf.large-system-cache",
+      "name": { "en": "Prefer larger file-system cache", "uk": "Більший кеш файлової системи" },
+      "description": { "en": "LargeSystemCache=1: the kernel keeps more file data cached in RAM. Useful with 16 GB+.", "uk": "LargeSystemCache=1: ядро тримає більше файлових даних у RAM. Корисно з 16 ГБ+." },
+      "risk": "moderate", "weight": 0, "tags": ["ram"], "reboot": true,
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "name": "LargeSystemCache", "value": 1 }
+      ]
+    },
+    {
+      "id": "perf.storage-sense-off",
+      "name": { "en": "Disable Storage Sense auto-cleanup", "uk": "Вимкнути автоочищення Storage Sense" },
+      "description": { "en": "Stops Windows from deleting Downloads/Recycle Bin items on a schedule without asking.", "uk": "Windows не видалятиме файли із Завантажень/Кошика за розкладом без запиту." },
+      "risk": "safe", "weight": 0, "tags": ["disk"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy", "name": "01", "value": 0 }
+      ]
+    },
+    {
+      "id": "perf.reserved-storage-off",
+      "name": { "en": "Disable Reserved Storage (~7 GB)", "uk": "Вимкнути Зарезервоване сховище (~7 ГБ)" },
+      "description": { "en": "Frees the space Windows holds back for updates. Updates still work but may need free space at install time.", "uk": "Звільняє місце, яке Windows тримає для оновлень. Оновлення працюють, але потребуватимуть вільного місця під час встановлення." },
+      "risk": "moderate", "weight": 0, "tags": ["disk"],
+      "actions": [
+        { "type": "command", "apply": "dism /Online /Set-ReservedStorageState /State:Disabled", "revert": "dism /Online /Set-ReservedStorageState /State:Enabled" },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ReserveManager", "name": "ShippedWithReserves", "value": 0 }
+      ],
+      "detect": [ { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ReserveManager", "name": "ShippedWithReserves", "value": 0 } ]
+    },
+    {
+      "id": "perf.ifeo-telemetry-killers",
+      "name": { "en": "Neutralise CompatTelRunner / DeviceCensus via IFEO", "uk": "Знешкодити CompatTelRunner / DeviceCensus через IFEO" },
+      "description": { "en": "Image File Execution Options 'Debugger' redirects telemetry runners to taskkill so they exit instantly even if a task re-enables them.", "uk": "IFEO «Debugger» перенаправляє телеметричні процеси на taskkill — вони одразу завершуються навіть якщо завдання їх знову ввімкне." },
+      "risk": "advanced", "weight": 0, "tags": ["telemetry"],
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\CompatTelRunner.exe", "name": "Debugger", "value": "%windir%\\System32\\taskkill.exe", "kind": "String" },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\DeviceCensus.exe", "name": "Debugger", "value": "%windir%\\System32\\taskkill.exe", "kind": "String" },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\BGAUpsell.exe", "name": "Debugger", "value": "%windir%\\System32\\taskkill.exe", "kind": "String" },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\BCILauncher.exe", "name": "Debugger", "value": "%windir%\\System32\\taskkill.exe", "kind": "String" }
+      ]
+    }
+  ]
+}

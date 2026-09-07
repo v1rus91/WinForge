@@ -1,0 +1,242 @@
+{
+  "category": "bloatware",
+  "tweaks": [
+    {
+      "id": "bloat.ms-junk",
+      "name": { "en": "Remove Microsoft junk apps (safe set)", "uk": "Видалити зайві застосунки Microsoft (безпечний набір)" },
+      "description": { "en": "Bing News/Weather/Finance/Sports, Solitaire, Get Help, Get Started, Feedback Hub, Maps, Office Hub, Power Automate, Todo, Clipchamp, Journal, Dev Home, PC Manager, Family, Quick Assist, People, Mail & Calendar legacy, Sway, OneNote store, 3D Viewer/Print 3D, Mixed Reality, Skype, Cortana.", "uk": "Bing News/Weather/Finance/Sports, Solitaire, Get Help, Get Started, Feedback Hub, Maps, Office Hub, Power Automate, Todo, Clipchamp, Journal, Dev Home, PC Manager, Family, Quick Assist, People, стара Пошта, Sway, OneNote store, 3D Viewer/Print 3D, Mixed Reality, Skype, Cortana." },
+      "risk": "safe", "weight": 3, "tags": ["appx", "recommended"], "reversible": false,
+      "actions": [
+        { "type": "appx", "name": "Microsoft.BingNews" },
+        { "type": "appx", "name": "Microsoft.BingWeather" },
+        { "type": "appx", "name": "Microsoft.BingFinance" },
+        { "type": "appx", "name": "Microsoft.BingSports" },
+        { "type": "appx", "name": "Microsoft.BingTranslator" },
+        { "type": "appx", "name": "Microsoft.BingTravel" },
+        { "type": "appx", "name": "Microsoft.BingFoodAndDrink" },
+        { "type": "appx", "name": "Microsoft.BingHealthAndFitness" },
+        { "type": "appx", "name": "Microsoft.BingSearch" },
+        { "type": "appx", "name": "Microsoft.News" },
+        { "type": "appx", "name": "Microsoft.MicrosoftSolitaireCollection" },
+        { "type": "appx", "name": "Microsoft.GetHelp" },
+        { "type": "appx", "name": "Microsoft.Getstarted" },
+        { "type": "appx", "name": "Microsoft.WindowsFeedbackHub" },
+        { "type": "appx", "name": "Microsoft.WindowsMaps" },
+        { "type": "appx", "name": "Microsoft.MicrosoftOfficeHub" },
+        { "type": "appx", "name": "Microsoft.PowerAutomateDesktop" },
+        { "type": "appx", "name": "Microsoft.Todos" },
+        { "type": "appx", "name": "Clipchamp.Clipchamp" },
+        { "type": "appx", "name": "Microsoft.MicrosoftJournal" },
+        { "type": "appx", "name": "Microsoft.Windows.DevHome" },
+        { "type": "appx", "name": "Microsoft.PCManager" },
+        { "type": "appx", "name": "MicrosoftCorporationII.MicrosoftFamily" },
+        { "type": "appx", "name": "MicrosoftCorporationII.QuickAssist" },
+        { "type": "appx", "name": "Microsoft.People" },
+        { "type": "appx", "name": "microsoft.windowscommunicationsapps" },
+        { "type": "appx", "name": "Microsoft.Office.Sway" },
+        { "type": "appx", "name": "Microsoft.Office.OneNote" },
+        { "type": "appx", "name": "Microsoft.Microsoft3DViewer" },
+        { "type": "appx", "name": "Microsoft.Print3D" },
+        { "type": "appx", "name": "Microsoft.3DBuilder" },
+        { "type": "appx", "name": "Microsoft.MixedReality.Portal" },
+        { "type": "appx", "name": "Microsoft.SkypeApp" },
+        { "type": "appx", "name": "Microsoft.549981C3F5F10" },
+        { "type": "appx", "name": "Microsoft.Messaging" },
+        { "type": "appx", "name": "Microsoft.OneConnect" },
+        { "type": "appx", "name": "Microsoft.NetworkSpeedTest" },
+        { "type": "appx", "name": "Microsoft.MicrosoftPowerBIForWindows" },
+        { "type": "appx", "name": "Microsoft.Windows.AIHub" },
+        { "type": "appx", "name": "Microsoft.M365Companions" },
+        { "type": "appx", "name": "Microsoft.WindowsAlarms" },
+        { "type": "appx", "name": "Microsoft.WindowsSoundRecorder" },
+        { "type": "appx", "name": "Microsoft.ZuneVideo" },
+        { "type": "appx", "name": "Microsoft.StartExperiencesApp" }
+      ],
+      "detect": [
+        { "type": "appx", "name": "Microsoft.BingNews" },
+        { "type": "appx", "name": "Microsoft.MicrosoftSolitaireCollection" },
+        { "type": "appx", "name": "Microsoft.WindowsFeedbackHub" },
+        { "type": "appx", "name": "Microsoft.GetHelp" }
+      ]
+    },
+    {
+      "id": "bloat.third-party",
+      "name": { "en": "Remove third-party sponsored apps", "uk": "Видалити сторонні спонсоровані застосунки" },
+      "description": { "en": "Candy Crush, Spotify stub, TikTok, Netflix, Disney+, Prime Video, Facebook/Instagram, LinkedIn, Duolingo, Hulu, Twitter, WhatsApp stub, Amazon and other OEM/Store promo packages.", "uk": "Candy Crush, заглушка Spotify, TikTok, Netflix, Disney+, Prime Video, Facebook/Instagram, LinkedIn, Duolingo, Hulu, Twitter, заглушка WhatsApp, Amazon та інші промо-пакети." },
+      "risk": "safe", "weight": 2, "tags": ["appx", "recommended"], "reversible": false,
+      "actions": [
+        { "type": "appx", "name": "king.com.*" },
+        { "type": "appx", "name": "*CandyCrush*" },
+        { "type": "appx", "name": "SpotifyAB.SpotifyMusic" },
+        { "type": "appx", "name": "BytedancePte.Ltd.TikTok" },
+        { "type": "appx", "name": "*Netflix*" },
+        { "type": "appx", "name": "Disney.*" },
+        { "type": "appx", "name": "*DisneyMagicKingdoms*" },
+        { "type": "appx", "name": "AmazonVideo.PrimeVideo" },
+        { "type": "appx", "name": "Amazon.com.Amazon" },
+        { "type": "appx", "name": "*Facebook*" },
+        { "type": "appx", "name": "*Instagram*" },
+        { "type": "appx", "name": "*LinkedIn*" },
+        { "type": "appx", "name": "*Duolingo*" },
+        { "type": "appx", "name": "*HULULLC*" },
+        { "type": "appx", "name": "*Twitter*" },
+        { "type": "appx", "name": "*WhatsApp*" },
+        { "type": "appx", "name": "*Messenger*" },
+        { "type": "appx", "name": "*Flipboard*" },
+        { "type": "appx", "name": "*PicsArt*" },
+        { "type": "appx", "name": "*Pandora*" },
+        { "type": "appx", "name": "*TuneIn*" },
+        { "type": "appx", "name": "*iHeartRadio*" },
+        { "type": "appx", "name": "*Asphalt8*" },
+        { "type": "appx", "name": "*MarchofEmpires*" },
+        { "type": "appx", "name": "*RoyalRevolt*" },
+        { "type": "appx", "name": "*HiddenCity*" },
+        { "type": "appx", "name": "*FarmVille*" },
+        { "type": "appx", "name": "*COOKINGFEVER*" },
+        { "type": "appx", "name": "*CaesarsSlots*" },
+        { "type": "appx", "name": "*BubbleWitch*" },
+        { "type": "appx", "name": "*AdobePhotoshopExpress*" },
+        { "type": "appx", "name": "*AutodeskSketchBook*" },
+        { "type": "appx", "name": "*DrawboardPDF*" },
+        { "type": "appx", "name": "*Plex*" },
+        { "type": "appx", "name": "*SlingTV*" },
+        { "type": "appx", "name": "*WinZipUniversal*" },
+        { "type": "appx", "name": "*NYTCrossword*" },
+        { "type": "appx", "name": "*EclipseManager*" },
+        { "type": "appx", "name": "*ActiproSoftware*" },
+        { "type": "appx", "name": "*Sidia.LiveWallpaper*" },
+        { "type": "appx", "name": "*PolarrPhotoEditor*" },
+        { "type": "appx", "name": "*PhototasticCollage*" },
+        { "type": "appx", "name": "*OneCalendar*" },
+        { "type": "appx", "name": "*ACGMediaPlayer*" },
+        { "type": "appx", "name": "*CyberLinkMediaSuite*" }
+      ],
+      "detect": [ { "type": "appx", "name": "*CandyCrush*" }, { "type": "appx", "name": "SpotifyAB.SpotifyMusic" }, { "type": "appx", "name": "BytedancePte.Ltd.TikTok" } ]
+    },
+    {
+      "id": "bloat.oem",
+      "name": { "en": "Remove OEM helper apps (HP, Dell, Lenovo, LG)", "uk": "Видалити OEM-застосунки (HP, Dell, Lenovo, LG)" },
+      "description": { "en": "Removes vendor store apps like HP Support Assistant, Dell Digital Delivery, Lenovo Vantage, LG Monitor app. Vendor Win32 utilities are untouched.", "uk": "Видаляє вендорські store-застосунки: HP Support Assistant, Dell Digital Delivery, Lenovo Vantage, LG Monitor. Win32-утиліти вендорів не чіпає." },
+      "risk": "moderate", "weight": 1, "tags": ["appx", "oem"], "reversible": false,
+      "actions": [
+        { "type": "appx", "name": "AD2F1837.*" },
+        { "type": "appx", "name": "DellInc.*" },
+        { "type": "appx", "name": "E046963F.LenovoCompanion" },
+        { "type": "appx", "name": "LenovoCompanyLimited.*" },
+        { "type": "appx", "name": "LGElectronics.*" }
+      ],
+      "detect": [ { "type": "appx", "name": "AD2F1837.*" }, { "type": "appx", "name": "DellInc.*" }, { "type": "appx", "name": "LenovoCompanyLimited.*" } ]
+    },
+    {
+      "id": "bloat.xbox",
+      "name": { "en": "Remove Xbox apps & Game Bar", "uk": "Видалити застосунки Xbox та Game Bar" },
+      "description": { "en": "Xbox app, Game Bar overlay, Xbox TCUI/Identity/Speech overlays. Do NOT use if you play Game Pass PC titles or use Game Bar recording.", "uk": "Xbox, накладення Game Bar, Xbox TCUI/Identity/Speech. НЕ застосовуйте, якщо граєте в Game Pass PC або записуєте через Game Bar." },
+      "risk": "moderate", "weight": 1, "tags": ["appx", "xbox"], "reversible": false,
+      "actions": [
+        { "type": "appx", "name": "Microsoft.GamingApp" },
+        { "type": "appx", "name": "Microsoft.XboxApp" },
+        { "type": "appx", "name": "Microsoft.XboxGameOverlay" },
+        { "type": "appx", "name": "Microsoft.XboxGamingOverlay" },
+        { "type": "appx", "name": "Microsoft.XboxSpeechToTextOverlay" },
+        { "type": "appx", "name": "Microsoft.Xbox.TCUI" },
+        { "type": "appx", "name": "Microsoft.XboxIdentityProvider" }
+      ],
+      "detect": [ { "type": "appx", "name": "Microsoft.XboxGamingOverlay" }, { "type": "appx", "name": "Microsoft.GamingApp" } ]
+    },
+    {
+      "id": "bloat.teams-outlook",
+      "name": { "en": "Remove Teams (consumer) & new Outlook", "uk": "Видалити Teams (особистий) та новий Outlook" },
+      "description": { "en": "Removes the personal Teams client and the pre-installed 'Outlook (new)'.", "uk": "Видаляє особистий клієнт Teams та попередньо встановлений «Outlook (новий)»." },
+      "risk": "safe", "weight": 1, "tags": ["appx"], "reversible": false,
+      "actions": [
+        { "type": "appx", "name": "MSTeams" },
+        { "type": "appx", "name": "MicrosoftTeams" },
+        { "type": "appx", "name": "Microsoft.OutlookForWindows" }
+      ]
+    },
+    {
+      "id": "bloat.widgets",
+      "name": { "en": "Remove Widgets (Web Experience Pack)", "uk": "Видалити Віджети (Web Experience Pack)" },
+      "description": { "en": "Uninstalls the Widgets platform and the news feed behind it, and hides the taskbar button.", "uk": "Видаляє платформу Віджетів і стрічку новин, ховає кнопку на панелі завдань." },
+      "risk": "safe", "weight": 2, "tags": ["appx", "recommended"], "reversible": false, "restartExplorer": true, "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "name": "TaskbarDa", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Dsh", "name": "AllowNewsAndInterests", "value": 0 },
+        { "type": "powershell", "apply": "Get-Process -Name Widgets, WidgetService -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue" },
+        { "type": "appx", "name": "MicrosoftWindows.Client.WebExperience" },
+        { "type": "appx", "name": "Microsoft.WidgetsPlatformRuntime" }
+      ],
+      "detect": [ { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Dsh", "name": "AllowNewsAndInterests", "value": 0 }, { "type": "appx", "name": "MicrosoftWindows.Client.WebExperience" } ]
+    },
+    {
+      "id": "bloat.cross-device",
+      "name": { "en": "Remove Cross Device Experience Host & Phone Link", "uk": "Видалити Cross Device Experience Host та Phone Link" },
+      "description": { "en": "Removes the Phone Link app and the cross-device host used for mobile mirroring.", "uk": "Видаляє Phone Link і хост міжпристроєвих функцій для дзеркалення телефону." },
+      "risk": "moderate", "weight": 1, "tags": ["appx"], "reversible": false,
+      "actions": [
+        { "type": "appx", "name": "Microsoft.YourPhone" },
+        { "type": "appx", "name": "MicrosoftWindows.CrossDevice" },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Start\\Companions\\Microsoft.YourPhone_8wekyb3d8bbwe", "name": "IsEnabled", "value": 0 }
+      ]
+    },
+    {
+      "id": "bloat.onedrive",
+      "name": { "en": "Uninstall OneDrive", "uk": "Видалити OneDrive" },
+      "description": { "en": "Runs the OneDrive uninstaller, removes the Explorer sidebar entry, autorun and default-user setup hook. Files in the OneDrive folder are kept.", "uk": "Запускає деінсталятор OneDrive, прибирає запис у бічній панелі Провідника, автозапуск і хук для нових користувачів. Файли в теці OneDrive лишаються." },
+      "risk": "moderate", "weight": 1, "tags": ["onedrive"], "reversible": false, "restartExplorer": true,
+      "actions": [
+        { "type": "powershell", "apply": "Get-Process OneDrive -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue; $s=@(\"$env:SystemRoot\\System32\\OneDriveSetup.exe\",\"$env:SystemRoot\\SysWOW64\\OneDriveSetup.exe\",\"$env:ProgramFiles\\Microsoft OneDrive\\OneDriveSetup.exe\",\"$env:LOCALAPPDATA\\Microsoft\\OneDrive\\OneDriveSetup.exe\") | Where-Object { Test-Path $_ } | Select-Object -First 1; if($s){ Start-Process $s -ArgumentList '/uninstall' -Wait -NoNewWindow }; winget uninstall --id Microsoft.OneDrive --silent --accept-source-agreements 2>$null | Out-Null", "revert": "winget install --id Microsoft.OneDrive --silent --accept-source-agreements --accept-package-agreements" },
+        { "type": "registry", "path": "HKCR:\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}", "name": "System.IsPinnedToNameSpaceTree", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\OneDrive", "name": "DisableFileSyncNGSC", "value": 1 },
+        { "type": "registryDelete", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "name": "OneDrive" },
+        { "type": "powershell", "apply": "reg load HKU\\WFDef \"$env:SystemDrive\\Users\\Default\\NTUSER.DAT\" 2>$null | Out-Null; reg delete 'HKU\\WFDef\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run' /v OneDriveSetup /f 2>$null | Out-Null; reg unload HKU\\WFDef 2>$null | Out-Null" },
+        { "type": "powershell", "apply": "Get-ScheduledTask -TaskName 'OneDrive*' -ErrorAction SilentlyContinue | Unregister-ScheduledTask -Confirm:$false -ErrorAction SilentlyContinue" }
+      ],
+      "detect": [ { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\OneDrive", "name": "DisableFileSyncNGSC", "value": 1 } ]
+    },
+    {
+      "id": "bloat.optional-apps",
+      "name": { "en": "Remove rarely used inbox apps (Camera, Alarms, Media Player, Sound Recorder…)", "uk": "Видалити рідко вживані вбудовані застосунки (Камера, Будильники, Медіаплеєр…)" },
+      "description": { "en": "Camera, Alarms & Clock, Media Player, Voice Recorder, Sticky Notes, Whiteboard, Paint 3D. Calculator, Photos, Notepad, Paint, Snipping Tool and Terminal are kept.", "uk": "Камера, Будильники, Медіаплеєр, Диктофон, Sticky Notes, Whiteboard, Paint 3D. Калькулятор, Фотографії, Блокнот, Paint, Ножиці та Terminal лишаються." },
+      "risk": "moderate", "weight": 0, "tags": ["appx"], "reversible": false,
+      "actions": [
+        { "type": "appx", "name": "Microsoft.WindowsCamera" },
+        { "type": "appx", "name": "Microsoft.WindowsAlarms" },
+        { "type": "appx", "name": "Microsoft.ZuneMusic" },
+        { "type": "appx", "name": "Microsoft.WindowsSoundRecorder" },
+        { "type": "appx", "name": "Microsoft.MicrosoftStickyNotes" },
+        { "type": "appx", "name": "Microsoft.Whiteboard" },
+        { "type": "appx", "name": "Microsoft.MSPaint" }
+      ]
+    },
+    {
+      "id": "bloat.consumer-features",
+      "name": { "en": "Stop Windows from auto-installing promoted apps", "uk": "Заборонити Windows автоматично встановлювати рекламні застосунки" },
+      "description": { "en": "Disables Content Delivery Manager silent installs, pre-installed app re-provisioning, Start suggestions and 'consumer features'.", "uk": "Вимикає тихі встановлення через Content Delivery Manager, повторне провізіонування, підказки в Пуску та «споживчі функції»." },
+      "risk": "safe", "weight": 3, "tags": ["ads", "recommended"], "defaultUser": true,
+      "actions": [
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent", "name": "DisableWindowsConsumerFeatures", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent", "name": "DisableSoftLanding", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent", "name": "DisableCloudOptimizedContent", "value": 1 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent", "name": "DisableConsumerAccountStateContent", "value": 1 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "name": "ContentDeliveryAllowed", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "name": "SilentInstalledAppsEnabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "name": "PreInstalledAppsEnabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "name": "PreInstalledAppsEverEnabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "name": "OemPreInstalledAppsEnabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "name": "SubscribedContentEnabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "name": "SystemPaneSuggestionsEnabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "name": "SoftLandingEnabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "name": "FeatureManagementEnabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "name": "SubscribedContent-310093Enabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "name": "SubscribedContent-338388Enabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "name": "SubscribedContent-338389Enabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "name": "SubscribedContent-338393Enabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "name": "SubscribedContent-353694Enabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "name": "SubscribedContent-353696Enabled", "value": 0 },
+        { "type": "registry", "path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "name": "SubscribedContent-353698Enabled", "value": 0 },
+        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\WindowsStore", "name": "AutoDownload", "value": 2 }
+      ]
+    }
+  ]
+}

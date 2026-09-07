@@ -1,0 +1,4 @@
+testResults.xml
+*.log
+.DS_Store
+Thumbs.db

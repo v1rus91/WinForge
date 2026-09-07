@@ -1,0 +1,7 @@
+{
+  "id": "privacy", "order": 2, "icon": "🔒",
+  "name": { "en": "Privacy Max", "uk": "Максимальна приватність" },
+  "description": { "en": "Every safe and moderate privacy/AI/Edge tweak, hosts-file telemetry block, local-only search, Quad9 DNS, no cloud sync.", "uk": "Усі безпечні й помірні твіки приватності/AI/Edge, блок телеметрії в hosts, локальний пошук, DNS Quad9, без хмарної синхронізації." },
+  "include": [ "category:privacy", "category:ai", "category:edge", "explorer.search-no-bing", "explorer.no-recent-frequent", "bloat.consumer-features", "bloat.widgets", "updates.delivery-optimization-off", "sec.defender-cloud-samples", "net.dns-quad9", "net.llmnr-netbios-off", "svc.diagnostics" ],
+  "exclude": [ "edge.uninstall", "net.dns-cloudflare" ]
+}

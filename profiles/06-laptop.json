@@ -1,0 +1,7 @@
+{
+  "id": "laptop", "order": 6, "icon": "🔋",
+  "name": { "en": "Laptop / Battery", "uk": "Ноутбук / Батарея" },
+  "description": { "en": "Balanced + background apps off, Modern Standby network off, reduced effects, safe services to manual. Never touches power throttling or the Ultimate plan.", "uk": "Збалансований + без фонових застосунків, без мережі в Modern Standby, менше ефектів, служби у ручний. Не чіпає Power Throttling і план Ultimate." },
+  "include": [ "tag:recommended", "perf.background-apps", "power.modern-standby-network-off", "perf.visual-effects", "svc.safe-manual", "svc.hyperv", "updates.delivery-optimization-off", "sec.bitlocker-auto-off" ],
+  "exclude": [ "perf.power-throttling-off", "power.ultimate-plan", "power.usb-selective-suspend-off", "power.cpu-unpark" ]
+}

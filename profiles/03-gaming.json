@@ -1,0 +1,7 @@
+{
+  "id": "gaming", "order": 3, "icon": "🎮",
+  "name": { "en": "Gaming", "uk": "Ігровий" },
+  "description": { "en": "Balanced + Game DVR off, HAGS, windowed optimisations, no mouse accel, multimedia scheduler, Ultimate power plan, no driver updates from WU, USB suspend off, TCP tuning. Keeps Xbox services for Game Pass.", "uk": "Збалансований + без Game DVR, HAGS, оптимізації вікон, без прискорення миші, планувальник мультимедіа, план Ultimate, без драйверів з WU, без призупинення USB, TCP-тюнінг. Служби Xbox лишаються для Game Pass." },
+  "include": [ "tag:recommended", "category:gaming", "perf.foreground-priority", "perf.multimedia-profile", "perf.visual-effects", "perf.power-throttling-off", "power.ultimate-plan", "power.usb-selective-suspend-off", "updates.no-drivers", "net.tcp-tuning", "net.nagle-off", "svc.safe-manual" ],
+  "exclude": [ "risk:advanced", "gaming.fullscreen-optimizations-off", "gaming.mpo-off", "bloat.xbox" ]
+}
