@@ -3,79 +3,239 @@
   "tweaks": [
     {
       "id": "net.tcp-tuning",
-      "name": { "en": "TCP tuning: CTCP, RSS, ECN, no heuristics/timestamps", "uk": "TCP-тюнінг: CTCP, RSS, ECN, без евристик/timestamps" },
-      "description": { "en": "netsh int tcp: congestion provider CTCP, receive-side scaling on, ECN on, timestamps off, heuristics off, initial congestion window 10. Modest throughput/latency gain on fast links.", "uk": "netsh int tcp: провайдер CTCP, RSS увімкнено, ECN увімкнено, timestamps вимкнено, евристики вимкнено, ICW 10. Помірний виграш на швидких каналах." },
-      "risk": "safe", "weight": 1, "tags": ["network"],
+      "name": {
+        "en": "TCP tuning: CTCP, RSS, ECN, no heuristics/timestamps",
+        "uk": "TCP-тюнінг: CTCP, RSS, ECN, без евристик/timestamps"
+      },
+      "description": {
+        "en": "netsh int tcp: congestion provider CTCP, receive-side scaling on, ECN on, timestamps off, heuristics off, initial congestion window 10. Modest throughput/latency gain on fast links.",
+        "uk": "netsh int tcp: провайдер CTCP, RSS увімкнено, ECN увімкнено, timestamps вимкнено, евристики вимкнено, ICW 10. Помірний виграш на швидких каналах."
+      },
+      "risk": "safe",
+      "weight": 1,
+      "tags": [
+        "network"
+      ],
       "actions": [
-        { "type": "command", "apply": "netsh int tcp set heuristics disabled", "revert": "netsh int tcp set heuristics enabled" },
-        { "type": "command", "apply": "netsh int tcp set supplemental template=internet congestionprovider=ctcp", "revert": "netsh int tcp set supplemental template=internet congestionprovider=default" },
-        { "type": "command", "apply": "netsh int tcp set global rss=enabled ecncapability=enabled timestamps=disabled", "revert": "netsh int tcp set global rss=default ecncapability=default timestamps=default" },
-        { "type": "command", "apply": "netsh int tcp set supplemental template=internet icw=10", "revert": "netsh int tcp set supplemental template=internet icw=4" }
+        {
+          "type": "command",
+          "apply": "netsh int tcp set heuristics disabled",
+          "revert": "netsh int tcp set heuristics enabled"
+        },
+        {
+          "type": "command",
+          "apply": "netsh int tcp set supplemental template=internet congestionprovider=ctcp",
+          "revert": "netsh int tcp set supplemental template=internet congestionprovider=default"
+        },
+        {
+          "type": "command",
+          "apply": "netsh int tcp set global rss=enabled ecncapability=enabled timestamps=disabled",
+          "revert": "netsh int tcp set global rss=default ecncapability=default timestamps=default"
+        },
+        {
+          "type": "command",
+          "apply": "netsh int tcp set supplemental template=internet icw=10",
+          "revert": "netsh int tcp set supplemental template=internet icw=4"
+        }
       ]
     },
     {
       "id": "net.nagle-off",
-      "name": { "en": "Disable Nagle's algorithm (TcpAckFrequency/TcpNoDelay)", "uk": "Вимкнути алгоритм Нейгла (TcpAckFrequency/TcpNoDelay)" },
-      "description": { "en": "Lower latency for small packets (online games, RDP) on every active adapter. Can slightly increase packet count.", "uk": "Нижча затримка для малих пакетів (онлайн-ігри, RDP) на всіх активних адаптерах. Трохи більше пакетів." },
-      "risk": "moderate", "weight": 1, "tags": ["gaming", "latency"], "reboot": true,
+      "name": {
+        "en": "Disable Nagle's algorithm (TcpAckFrequency/TcpNoDelay)",
+        "uk": "Вимкнути алгоритм Нейгла (TcpAckFrequency/TcpNoDelay)"
+      },
+      "description": {
+        "en": "Lower latency for small packets (online games, RDP) on every active adapter. Can slightly increase packet count.",
+        "uk": "Нижча затримка для малих пакетів (онлайн-ігри, RDP) на всіх активних адаптерах. Трохи більше пакетів."
+      },
+      "risk": "moderate",
+      "weight": 1,
+      "tags": [
+        "gaming",
+        "latency"
+      ],
+      "reboot": true,
       "actions": [
-        { "type": "powershell",
+        {
+          "type": "powershell",
           "apply": "Get-ChildItem 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces' | ForEach-Object { $ip=(Get-ItemProperty $_.PSPath -Name DhcpIPAddress -ErrorAction SilentlyContinue).DhcpIPAddress; $ip2=(Get-ItemProperty $_.PSPath -Name IPAddress -ErrorAction SilentlyContinue).IPAddress; if($ip -or $ip2){ Set-ItemProperty $_.PSPath -Name TcpAckFrequency -Value 1 -Type DWord; Set-ItemProperty $_.PSPath -Name TCPNoDelay -Value 1 -Type DWord } }",
-          "revert": "Get-ChildItem 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces' | ForEach-Object { Remove-ItemProperty $_.PSPath -Name TcpAckFrequency -ErrorAction SilentlyContinue; Remove-ItemProperty $_.PSPath -Name TCPNoDelay -ErrorAction SilentlyContinue }" }
+          "revert": "Get-ChildItem 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces' | ForEach-Object { Remove-ItemProperty $_.PSPath -Name TcpAckFrequency -ErrorAction SilentlyContinue; Remove-ItemProperty $_.PSPath -Name TCPNoDelay -ErrorAction SilentlyContinue }"
+        }
       ]
     },
     {
       "id": "net.llmnr-netbios-off",
-      "name": { "en": "Disable LLMNR & NetBIOS name resolution", "uk": "Вимкнути LLMNR та NetBIOS" },
-      "description": { "en": "Closes classic LAN spoofing vectors (Responder attacks). Only DNS/mDNS is used for name resolution.", "uk": "Закриває класичні вектори спуфінгу в LAN (атаки Responder). Для імен лишаються DNS/mDNS." },
-      "risk": "moderate", "weight": 1, "tags": ["security"],
-      "actions": [
-        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\DNSClient", "name": "EnableMulticast", "value": 0 },
-        { "type": "powershell", "apply": "Get-ChildItem 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\NetBT\\Parameters\\Interfaces' | ForEach-Object { Set-ItemProperty $_.PSPath -Name NetbiosOptions -Value 2 -Type DWord }", "revert": "Get-ChildItem 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\NetBT\\Parameters\\Interfaces' | ForEach-Object { Set-ItemProperty $_.PSPath -Name NetbiosOptions -Value 0 -Type DWord }" }
+      "name": {
+        "en": "Disable LLMNR & NetBIOS name resolution",
+        "uk": "Вимкнути LLMNR та NetBIOS"
+      },
+      "description": {
+        "en": "Closes classic LAN spoofing vectors (Responder attacks). Only DNS/mDNS is used for name resolution.",
+        "uk": "Закриває класичні вектори спуфінгу в LAN (атаки Responder). Для імен лишаються DNS/mDNS."
+      },
+      "risk": "moderate",
+      "weight": 1,
+      "tags": [
+        "security"
       ],
-      "detect": [ { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\DNSClient", "name": "EnableMulticast", "value": 0 } ]
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\DNSClient",
+          "name": "EnableMulticast",
+          "value": 0
+        },
+        {
+          "type": "powershell",
+          "apply": "Get-ChildItem 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\NetBT\\Parameters\\Interfaces' | ForEach-Object { Set-ItemProperty $_.PSPath -Name NetbiosOptions -Value 2 -Type DWord }",
+          "revert": "Get-ChildItem 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\NetBT\\Parameters\\Interfaces' | ForEach-Object { Set-ItemProperty $_.PSPath -Name NetbiosOptions -Value 0 -Type DWord }"
+        }
+      ],
+      "detect": [
+        {
+          "type": "registry",
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\DNSClient",
+          "name": "EnableMulticast",
+          "value": 0
+        }
+      ]
     },
     {
       "id": "net.teredo-off",
-      "name": { "en": "Disable Teredo / ISATAP / 6to4 tunnels", "uk": "Вимкнути тунелі Teredo / ISATAP / 6to4" },
-      "description": { "en": "Legacy IPv6 transition tunnels. Note: Xbox app party chat may need Teredo.", "uk": "Застарілі IPv6-тунелі. Увага: партійний чат Xbox може потребувати Teredo." },
-      "risk": "moderate", "weight": 0, "tags": ["network"],
+      "name": {
+        "en": "Disable Teredo / ISATAP / 6to4 tunnels",
+        "uk": "Вимкнути тунелі Teredo / ISATAP / 6to4"
+      },
+      "description": {
+        "en": "Legacy IPv6 transition tunnels. Note: Xbox app party chat may need Teredo.",
+        "uk": "Застарілі IPv6-тунелі. Увага: партійний чат Xbox може потребувати Teredo."
+      },
+      "risk": "moderate",
+      "weight": 0,
+      "tags": [
+        "network"
+      ],
       "actions": [
-        { "type": "command", "apply": "netsh interface teredo set state disabled", "revert": "netsh interface teredo set state default" },
-        { "type": "command", "apply": "netsh interface isatap set state disabled", "revert": "netsh interface isatap set state default" },
-        { "type": "command", "apply": "netsh interface 6to4 set state disabled", "revert": "netsh interface 6to4 set state default" }
+        {
+          "type": "command",
+          "apply": "netsh interface teredo set state disabled",
+          "revert": "netsh interface teredo set state default"
+        },
+        {
+          "type": "command",
+          "apply": "netsh interface isatap set state disabled",
+          "revert": "netsh interface isatap set state default"
+        },
+        {
+          "type": "command",
+          "apply": "netsh interface 6to4 set state disabled",
+          "revert": "netsh interface 6to4 set state default"
+        }
       ]
     },
     {
       "id": "net.dns-cloudflare",
-      "name": { "en": "Set DNS to Cloudflare (1.1.1.1) with DoH", "uk": "DNS Cloudflare (1.1.1.1) з DoH" },
-      "description": { "en": "Applies 1.1.1.1 / 1.0.0.1 (+IPv6) on every connected adapter and registers DNS-over-HTTPS templates.", "uk": "Ставить 1.1.1.1 / 1.0.0.1 (+IPv6) на всі підключені адаптери та реєструє DoH-шаблони." },
-      "risk": "moderate", "weight": 0, "tags": ["dns", "privacy"],
+      "name": {
+        "en": "Set DNS to Cloudflare (1.1.1.1) with DoH",
+        "uk": "DNS Cloudflare (1.1.1.1) з DoH"
+      },
+      "description": {
+        "en": "Applies 1.1.1.1 / 1.0.0.1 (+IPv6) on every connected adapter and registers DNS-over-HTTPS templates.",
+        "uk": "Ставить 1.1.1.1 / 1.0.0.1 (+IPv6) на всі підключені адаптери та реєструє DoH-шаблони."
+      },
+      "risk": "moderate",
+      "weight": 0,
+      "tags": [
+        "dns",
+        "privacy"
+      ],
       "actions": [
-        { "type": "powershell",
+        {
+          "type": "powershell",
           "apply": "Get-NetAdapter | Where-Object Status -eq 'Up' | ForEach-Object { Set-DnsClientServerAddress -InterfaceIndex $_.ifIndex -ServerAddresses '1.1.1.1','1.0.0.1','2606:4700:4700::1111','2606:4700:4700::1001' }; foreach($s in '1.1.1.1','1.0.0.1'){ Add-DnsClientDohServerAddress -ServerAddress $s -DohTemplate 'https://cloudflare-dns.com/dns-query' -AllowFallbackToUdp $false -AutoUpgrade $true -ErrorAction SilentlyContinue }; Clear-DnsClientCache",
-          "revert": "Get-NetAdapter | Where-Object Status -eq 'Up' | ForEach-Object { Set-DnsClientServerAddress -InterfaceIndex $_.ifIndex -ResetServerAddresses }; Clear-DnsClientCache" }
+          "revert": "Get-NetAdapter | Where-Object Status -eq 'Up' | ForEach-Object { Set-DnsClientServerAddress -InterfaceIndex $_.ifIndex -ResetServerAddresses }; Clear-DnsClientCache"
+        }
       ]
     },
     {
       "id": "net.dns-quad9",
-      "name": { "en": "Set DNS to Quad9 (9.9.9.9, malware-blocking) with DoH", "uk": "DNS Quad9 (9.9.9.9, блокує шкідливі домени) з DoH" },
-      "description": { "en": "Privacy-focused resolver that blocks known malicious domains.", "uk": "Приватний резолвер, що блокує відомі шкідливі домени." },
-      "risk": "moderate", "weight": 0, "tags": ["dns", "security"],
+      "name": {
+        "en": "Set DNS to Quad9 (9.9.9.9, malware-blocking) with DoH",
+        "uk": "DNS Quad9 (9.9.9.9, блокує шкідливі домени) з DoH"
+      },
+      "description": {
+        "en": "Privacy-focused resolver that blocks known malicious domains.",
+        "uk": "Приватний резолвер, що блокує відомі шкідливі домени."
+      },
+      "risk": "moderate",
+      "weight": 0,
+      "tags": [
+        "dns",
+        "security"
+      ],
       "actions": [
-        { "type": "powershell",
+        {
+          "type": "powershell",
           "apply": "Get-NetAdapter | Where-Object Status -eq 'Up' | ForEach-Object { Set-DnsClientServerAddress -InterfaceIndex $_.ifIndex -ServerAddresses '9.9.9.9','149.112.112.112','2620:fe::fe','2620:fe::9' }; foreach($s in '9.9.9.9','149.112.112.112'){ Add-DnsClientDohServerAddress -ServerAddress $s -DohTemplate 'https://dns.quad9.net/dns-query' -AllowFallbackToUdp $false -AutoUpgrade $true -ErrorAction SilentlyContinue }; Clear-DnsClientCache",
-          "revert": "Get-NetAdapter | Where-Object Status -eq 'Up' | ForEach-Object { Set-DnsClientServerAddress -InterfaceIndex $_.ifIndex -ResetServerAddresses }; Clear-DnsClientCache" }
+          "revert": "Get-NetAdapter | Where-Object Status -eq 'Up' | ForEach-Object { Set-DnsClientServerAddress -InterfaceIndex $_.ifIndex -ResetServerAddresses }; Clear-DnsClientCache"
+        }
       ]
     },
     {
       "id": "net.smb1-off",
-      "name": { "en": "Remove SMBv1 protocol", "uk": "Видалити протокол SMBv1" },
-      "description": { "en": "The WannaCry vector. Only very old NAS boxes/printers still need it.", "uk": "Вектор WannaCry. Потрібен лише дуже старим NAS/принтерам." },
-      "risk": "safe", "weight": 1, "tags": ["security", "recommended"], "reboot": true,
+      "name": {
+        "en": "Remove SMBv1 protocol",
+        "uk": "Видалити протокол SMBv1"
+      },
+      "description": {
+        "en": "The WannaCry vector. Only very old NAS boxes/printers still need it.",
+        "uk": "Вектор WannaCry. Потрібен лише дуже старим NAS/принтерам."
+      },
+      "risk": "safe",
+      "weight": 1,
+      "tags": [
+        "security",
+        "recommended"
+      ],
+      "reboot": true,
       "actions": [
-        { "type": "feature", "name": "SMB1Protocol", "state": "Disabled" },
-        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters", "name": "SMB1", "value": 0 }
+        {
+          "type": "feature",
+          "name": "SMB1Protocol",
+          "state": "Disabled"
+        },
+        {
+          "type": "registry",
+          "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters",
+          "name": "SMB1",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "net.qos-reserve-zero",
+      "name": {
+        "en": "QoS: reserve 0 % bandwidth for the system",
+        "uk": "QoS: резервувати 0 % смуги для системи"
+      },
+      "description": {
+        "en": "NonBestEffortLimit 0 — the packet scheduler can't hold back 20 % of your link for QoS-tagged system traffic. Harmless; helps only if something on the PC actually uses QoS.",
+        "uk": "NonBestEffortLimit 0 — планувальник пакетів не притримує 20 % каналу під QoS-трафік системи. Нешкідливо; допомагає лише якщо щось на ПК реально використовує QoS."
+      },
+      "risk": "safe",
+      "weight": 0,
+      "tags": [
+        "network",
+        "gaming"
+      ],
+      "actions": [
+        {
+          "type": "registry",
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Psched",
+          "name": "NonBestEffortLimit",
+          "value": 0
+        }
       ]
     }
   ]

@@ -1,0 +1,38 @@
+{
+  "id": "gaming-desktop",
+  "order": 7,
+  "icon": "🖥️",
+  "name": {
+    "en": "Gaming Desktop Max",
+    "uk": "Ігровий десктоп Max"
+  },
+  "description": {
+    "en": "Everything in Gaming plus desktop-only power and latency work: PCIe/USB3/disk power saving off, CPU min 100 % + aggressive boost, no NIC power saving, global 0.5 ms timer, memory compression off, MPO off, no audio ducking, low-impact Defender, QoS reserve 0, Hyper-V guest services off. Advanced tweaks (MSI mode, NIC low-latency, hypervisor off) stay opt-in.",
+    "uk": "Усе з Gaming плюс суто десктопні речі: без енергозбереження PCIe/USB3/дисків, CPU мін. 100 % + агресивний буст, без енергозбереження мережевої карти, глобальний таймер 0,5 мс, без стиснення пам’яті, без MPO, без приглушення звуку, легкий Defender, QoS 0, служби гостя Hyper-V вимкнено. Просунуті твіки (MSI mode, NIC low-latency, гіпервізор) лишаються opt-in."
+  },
+  "include": [
+    "tag:recommended",
+    "category:gaming",
+    "perf.foreground-priority",
+    "perf.multimedia-profile",
+    "perf.visual-effects",
+    "perf.power-throttling-off",
+    "power.ultimate-plan",
+    "power.usb-selective-suspend-off",
+    "power.cpu-unpark",
+    "power.desktop-max",
+    "updates.no-drivers",
+    "net.tcp-tuning",
+    "net.nagle-off",
+    "net.qos-reserve-zero",
+    "svc.safe-manual",
+    "svc.hyperv",
+    "svc.diagnostics"
+  ],
+  "exclude": [
+    "risk:advanced",
+    "gaming.fullscreen-optimizations-off",
+    "bloat.xbox",
+    "power.modern-standby-network-off"
+  ]
+}

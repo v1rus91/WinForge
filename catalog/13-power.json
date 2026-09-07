@@ -3,71 +3,251 @@
   "tweaks": [
     {
       "id": "power.ultimate-plan",
-      "name": { "en": "Enable & activate Ultimate Performance power plan", "uk": "Увімкнути й активувати план «Максимальна продуктивність»" },
-      "description": { "en": "Unhides the hidden Ultimate Performance scheme and makes it active. Desktops only; laptops should keep Balanced.", "uk": "Відкриває приховану схему Ultimate Performance та активує її. Для десктопів; ноутбукам краще Balanced." },
-      "risk": "moderate", "weight": 1, "tags": ["power", "gaming", "desktop"],
-      "actions": [
-        { "type": "powershell",
-          "apply": "$g='e9a42b02-d5df-448d-aa00-03f14749eb61'; $list=powercfg /list; if($list -notmatch $g){ powercfg -duplicatescheme $g | Out-Null }; $line=(powercfg /list) | Select-String -Pattern 'Ultimate|Максимальна|Найвища' | Select-Object -First 1; $guid=if($line){ ([regex]'([0-9a-f\\-]{36})').Match($line.ToString()).Value } else { $g }; powercfg /setactive $guid",
-          "revert": "powercfg /setactive 381b4222-f694-41f0-9685-ff5bb260df2e" }
+      "name": {
+        "en": "Enable & activate Ultimate Performance power plan",
+        "uk": "Увімкнути й активувати план «Максимальна продуктивність»"
+      },
+      "description": {
+        "en": "Unhides the hidden Ultimate Performance scheme and makes it active. Desktops only; laptops should keep Balanced.",
+        "uk": "Відкриває приховану схему Ultimate Performance та активує її. Для десктопів; ноутбукам краще Balanced."
+      },
+      "risk": "moderate",
+      "weight": 1,
+      "tags": [
+        "power",
+        "gaming",
+        "desktop"
       ],
-      "detect": [ { "type": "commandMatch", "command": "powercfg /getactivescheme", "pattern": "e9a42b02|Ultimate|Максимальна|Найвища" } ]
+      "actions": [
+        {
+          "type": "powershell",
+          "apply": "$g='e9a42b02-d5df-448d-aa00-03f14749eb61'; $list=powercfg /list; if($list -notmatch $g){ powercfg -duplicatescheme $g | Out-Null }; $line=(powercfg /list) | Select-String -Pattern 'Ultimate|Максимальна|Найвища' | Select-Object -First 1; $guid=if($line){ ([regex]'([0-9a-f\\-]{36})').Match($line.ToString()).Value } else { $g }; powercfg /setactive $guid",
+          "revert": "powercfg /setactive 381b4222-f694-41f0-9685-ff5bb260df2e"
+        }
+      ],
+      "detect": [
+        {
+          "type": "commandMatch",
+          "command": "powercfg /getactivescheme",
+          "pattern": "e9a42b02|Ultimate|Максимальна|Найвища"
+        }
+      ]
     },
     {
       "id": "power.high-performance-plan",
-      "name": { "en": "Activate High Performance power plan", "uk": "Активувати план «Висока продуктивність»" },
-      "description": { "en": "The standard high-performance scheme; safer than Ultimate on laptops plugged in.", "uk": "Стандартна схема високої продуктивності; безпечніша за Ultimate для ноутбуків від мережі." },
-      "risk": "safe", "weight": 0, "tags": ["power"],
-      "actions": [
-        { "type": "command", "apply": "powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c", "revert": "powercfg /setactive 381b4222-f694-41f0-9685-ff5bb260df2e" }
+      "name": {
+        "en": "Activate High Performance power plan",
+        "uk": "Активувати план «Висока продуктивність»"
+      },
+      "description": {
+        "en": "The standard high-performance scheme; safer than Ultimate on laptops plugged in.",
+        "uk": "Стандартна схема високої продуктивності; безпечніша за Ultimate для ноутбуків від мережі."
+      },
+      "risk": "safe",
+      "weight": 0,
+      "tags": [
+        "power"
       ],
-      "detect": [ { "type": "commandMatch", "command": "powercfg /getactivescheme", "pattern": "8c5e7fda" } ]
+      "actions": [
+        {
+          "type": "command",
+          "apply": "powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c",
+          "revert": "powercfg /setactive 381b4222-f694-41f0-9685-ff5bb260df2e"
+        }
+      ],
+      "detect": [
+        {
+          "type": "commandMatch",
+          "command": "powercfg /getactivescheme",
+          "pattern": "8c5e7fda"
+        }
+      ]
     },
     {
       "id": "power.fast-startup-off",
-      "name": { "en": "Disable Fast Startup (hybrid shutdown)", "uk": "Вимкнути швидкий запуск (гібридне вимкнення)" },
-      "description": { "en": "Shutdown becomes a real shutdown: fixes dual-boot disk locks, Wake-on-LAN and 'reboot fixes it' bugs.", "uk": "Вимкнення стає справжнім: лікує блокування дисків у dual-boot, Wake-on-LAN і баги «допомагає лише перезавантаження»." },
-      "risk": "safe", "weight": 1, "tags": ["boot", "recommended"],
+      "name": {
+        "en": "Disable Fast Startup (hybrid shutdown)",
+        "uk": "Вимкнути швидкий запуск (гібридне вимкнення)"
+      },
+      "description": {
+        "en": "Shutdown becomes a real shutdown: fixes dual-boot disk locks, Wake-on-LAN and 'reboot fixes it' bugs.",
+        "uk": "Вимкнення стає справжнім: лікує блокування дисків у dual-boot, Wake-on-LAN і баги «допомагає лише перезавантаження»."
+      },
+      "risk": "safe",
+      "weight": 1,
+      "tags": [
+        "boot",
+        "recommended"
+      ],
       "actions": [
-        { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power", "name": "HiberbootEnabled", "value": 0 }
+        {
+          "type": "registry",
+          "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power",
+          "name": "HiberbootEnabled",
+          "value": 0
+        }
       ]
     },
     {
       "id": "power.hibernate-off",
-      "name": { "en": "Disable hibernation & delete hiberfil.sys", "uk": "Вимкнути гібернацію та видалити hiberfil.sys" },
-      "description": { "en": "Frees RAM-sized space on the system drive. Also disables Fast Startup.", "uk": "Звільняє на системному диску місце розміром із RAM. Також вимикає швидкий запуск." },
-      "risk": "moderate", "weight": 0, "tags": ["disk"],
-      "actions": [
-        { "type": "command", "apply": "powercfg /hibernate off", "revert": "powercfg /hibernate on" }
+      "name": {
+        "en": "Disable hibernation & delete hiberfil.sys",
+        "uk": "Вимкнути гібернацію та видалити hiberfil.sys"
+      },
+      "description": {
+        "en": "Frees RAM-sized space on the system drive. Also disables Fast Startup.",
+        "uk": "Звільняє на системному диску місце розміром із RAM. Також вимикає швидкий запуск."
+      },
+      "risk": "moderate",
+      "weight": 0,
+      "tags": [
+        "disk"
       ],
-      "detect": [ { "type": "registry", "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power", "name": "HibernateEnabled", "value": 0 } ]
+      "actions": [
+        {
+          "type": "command",
+          "apply": "powercfg /hibernate off",
+          "revert": "powercfg /hibernate on"
+        }
+      ],
+      "detect": [
+        {
+          "type": "registry",
+          "path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power",
+          "name": "HibernateEnabled",
+          "value": 0
+        }
+      ]
     },
     {
       "id": "power.usb-selective-suspend-off",
-      "name": { "en": "Disable USB selective suspend", "uk": "Вимкнути вибіркове призупинення USB" },
-      "description": { "en": "Stops mice/keyboards/DACs from being put to sleep and lagging on wake. Desktop recommended.", "uk": "Миша/клавіатура/DAC не засинатимуть і не лагатимуть після пробудження. Для десктопів." },
-      "risk": "safe", "weight": 1, "tags": ["usb", "gaming"],
+      "name": {
+        "en": "Disable USB selective suspend",
+        "uk": "Вимкнути вибіркове призупинення USB"
+      },
+      "description": {
+        "en": "Stops mice/keyboards/DACs from being put to sleep and lagging on wake. Desktop recommended.",
+        "uk": "Миша/клавіатура/DAC не засинатимуть і не лагатимуть після пробудження. Для десктопів."
+      },
+      "risk": "safe",
+      "weight": 1,
+      "tags": [
+        "usb",
+        "gaming"
+      ],
       "actions": [
-        { "type": "command", "apply": "powercfg /setacvalueindex SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0 && powercfg /setdcvalueindex SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0 && powercfg /setactive SCHEME_CURRENT", "revert": "powercfg /setacvalueindex SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 1 && powercfg /setdcvalueindex SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 1 && powercfg /setactive SCHEME_CURRENT" }
+        {
+          "type": "command",
+          "apply": "powercfg /setacvalueindex SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0 && powercfg /setdcvalueindex SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0 && powercfg /setactive SCHEME_CURRENT",
+          "revert": "powercfg /setacvalueindex SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 1 && powercfg /setdcvalueindex SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 1 && powercfg /setactive SCHEME_CURRENT"
+        }
       ]
     },
     {
       "id": "power.modern-standby-network-off",
-      "name": { "en": "Disconnect network during Modern Standby (laptops)", "uk": "Відключати мережу у Modern Standby (ноутбуки)" },
-      "description": { "en": "Stops the laptop from waking, downloading and draining the battery in your bag.", "uk": "Ноутбук не прокидається, не завантажує і не розряджається в сумці." },
-      "risk": "safe", "weight": 1, "tags": ["battery", "laptop"],
+      "name": {
+        "en": "Disconnect network during Modern Standby (laptops)",
+        "uk": "Відключати мережу у Modern Standby (ноутбуки)"
+      },
+      "description": {
+        "en": "Stops the laptop from waking, downloading and draining the battery in your bag.",
+        "uk": "Ноутбук не прокидається, не завантажує і не розряджається в сумці."
+      },
+      "risk": "safe",
+      "weight": 1,
+      "tags": [
+        "battery",
+        "laptop"
+      ],
       "actions": [
-        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Power\\PowerSettings\\f15576e8-98b7-4186-b944-eafa664402d9", "name": "ACSettingIndex", "value": 0 },
-        { "type": "registry", "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Power\\PowerSettings\\f15576e8-98b7-4186-b944-eafa664402d9", "name": "DCSettingIndex", "value": 0 }
+        {
+          "type": "registry",
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Power\\PowerSettings\\f15576e8-98b7-4186-b944-eafa664402d9",
+          "name": "ACSettingIndex",
+          "value": 0
+        },
+        {
+          "type": "registry",
+          "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Power\\PowerSettings\\f15576e8-98b7-4186-b944-eafa664402d9",
+          "name": "DCSettingIndex",
+          "value": 0
+        }
       ]
     },
     {
       "id": "power.cpu-unpark",
-      "name": { "en": "Unlock & disable CPU core parking (current plan)", "uk": "Розблокувати та вимкнути паркування ядер CPU (поточний план)" },
-      "description": { "en": "Sets minimum unparked cores to 100 % so all cores stay ready. Higher idle power on laptops.", "uk": "Мінімум розпаркованих ядер 100 % — усі ядра завжди готові. Вище споживання в простої на ноутбуках." },
-      "risk": "moderate", "weight": 0, "tags": ["cpu", "gaming"],
+      "name": {
+        "en": "Unlock & disable CPU core parking (current plan)",
+        "uk": "Розблокувати та вимкнути паркування ядер CPU (поточний план)"
+      },
+      "description": {
+        "en": "Sets minimum unparked cores to 100 % so all cores stay ready. Higher idle power on laptops.",
+        "uk": "Мінімум розпаркованих ядер 100 % — усі ядра завжди готові. Вище споживання в простої на ноутбуках."
+      },
+      "risk": "moderate",
+      "weight": 0,
+      "tags": [
+        "cpu",
+        "gaming"
+      ],
       "actions": [
-        { "type": "command", "apply": "powercfg -attributes SUB_PROCESSOR 0cc5b647-c1df-4637-891a-dec35c318583 -ATTRIB_HIDE && powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR 0cc5b647-c1df-4637-891a-dec35c318583 100 && powercfg /setactive SCHEME_CURRENT", "revert": "powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR 0cc5b647-c1df-4637-891a-dec35c318583 10 && powercfg /setactive SCHEME_CURRENT" }
+        {
+          "type": "command",
+          "apply": "powercfg -attributes SUB_PROCESSOR 0cc5b647-c1df-4637-891a-dec35c318583 -ATTRIB_HIDE && powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR 0cc5b647-c1df-4637-891a-dec35c318583 100 && powercfg /setactive SCHEME_CURRENT",
+          "revert": "powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR 0cc5b647-c1df-4637-891a-dec35c318583 10 && powercfg /setactive SCHEME_CURRENT"
+        }
+      ]
+    },
+    {
+      "id": "power.desktop-max",
+      "name": {
+        "en": "Desktop power: PCIe ASPM off, USB3 LPM off, disks never sleep, CPU min 100 %, boost Aggressive",
+        "uk": "Живлення десктопа: без PCIe ASPM, без USB3 LPM, диски не засинають, CPU мін. 100 %, буст Aggressive"
+      },
+      "description": {
+        "en": "Five hidden power-plan settings that cause hitching on desktops: PCI Express link power management, USB 3 link power management, hard-disk sleep, minimum processor state and the turbo-boost policy. Applied to the active plan. Do not use on laptops.",
+        "uk": "П’ять прихованих параметрів плану живлення, що спричиняють фризи на десктопах: керування живленням PCIe, USB 3 LPM, засинання дисків, мінімальний стан процесора та політика турбобусту. Для активного плану. Не для ноутбуків."
+      },
+      "risk": "moderate",
+      "weight": 1,
+      "tags": [
+        "power",
+        "gaming",
+        "desktop"
+      ],
+      "actions": [
+        {
+          "type": "command",
+          "apply": "powercfg /setacvalueindex SCHEME_CURRENT 501a4d13-42af-4429-9fd1-a8218c268e20 ee12f906-d277-404b-b6da-e5fa1a576df5 0",
+          "revert": "powercfg /setacvalueindex SCHEME_CURRENT 501a4d13-42af-4429-9fd1-a8218c268e20 ee12f906-d277-404b-b6da-e5fa1a576df5 1"
+        },
+        {
+          "type": "command",
+          "apply": "powercfg /setacvalueindex SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3 d4e98f31-5ffe-4ce1-be31-1b38b384c009 0",
+          "revert": "powercfg /setacvalueindex SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3 d4e98f31-5ffe-4ce1-be31-1b38b384c009 2"
+        },
+        {
+          "type": "command",
+          "apply": "powercfg /setacvalueindex SCHEME_CURRENT 0012ee47-9041-4b5d-9b77-535fba8b1442 6738e2c4-e8a5-4a42-b16a-e040e769756e 0",
+          "revert": "powercfg /setacvalueindex SCHEME_CURRENT 0012ee47-9041-4b5d-9b77-535fba8b1442 6738e2c4-e8a5-4a42-b16a-e040e769756e 1200"
+        },
+        {
+          "type": "command",
+          "apply": "powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR 893dee8e-2bef-41e0-89c6-b55d0929964c 100",
+          "revert": "powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR 893dee8e-2bef-41e0-89c6-b55d0929964c 5"
+        },
+        {
+          "type": "command",
+          "apply": "powercfg -attributes SUB_PROCESSOR be337238-0d82-4146-a960-4f3749d470c7 -ATTRIB_HIDE && powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR be337238-0d82-4146-a960-4f3749d470c7 2 && powercfg /setactive SCHEME_CURRENT",
+          "revert": "powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR be337238-0d82-4146-a960-4f3749d470c7 3 && powercfg /setactive SCHEME_CURRENT"
+        }
+      ],
+      "detect": [
+        {
+          "type": "commandMatch",
+          "command": "powercfg /query SCHEME_CURRENT 501a4d13-42af-4429-9fd1-a8218c268e20 ee12f906-d277-404b-b6da-e5fa1a576df5",
+          "pattern": "0x00000000"
+        }
       ]
     }
   ]

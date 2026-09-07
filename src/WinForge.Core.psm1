@@ -13,7 +13,7 @@ Set-StrictMode -Version 2.0
 
 # ------------------------------------------------------------------ constants
 $script:AppName    = 'WinForge'
-$script:Version    = '1.0.0'
+$script:Version    = '1.1.0'
 $script:IsWin      = ($env:OS -eq 'Windows_NT')
 $script:RootDir    = Split-Path -Parent $PSScriptRoot
 $script:DataDir    = if ($script:IsWin) { Join-Path $env:ProgramData $script:AppName } else { Join-Path $HOME ".$($script:AppName.ToLower())" }
