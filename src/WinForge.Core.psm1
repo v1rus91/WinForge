@@ -13,7 +13,7 @@ Set-StrictMode -Version 2.0
 
 # ------------------------------------------------------------------ constants
 $script:AppName    = 'WinForge'
-$script:Version    = '1.2.1'
+$script:Version    = '1.3.0'
 $script:IsWin      = ($env:OS -eq 'Windows_NT')
 $script:RootDir    = Split-Path -Parent $PSScriptRoot
 $script:DataDir    = if ($script:IsWin) { Join-Path $env:ProgramData $script:AppName } else { Join-Path $HOME ".$($script:AppName.ToLower())" }
@@ -98,6 +98,8 @@ function Get-ForgeConfig {
         telemetryScoreOnStart = $true
         lastProfile     = ''
         persistEnabled  = $false
+        persistApps     = $true
+        openReport      = $true
         checkUpdates    = $true
     }
     if (Test-Path -LiteralPath $script:ConfigFile) {
@@ -473,14 +475,43 @@ function Unblock-NonRemovableAppx {
     if (Test-Path -LiteralPath $key) { if (-not $script:DryRun) { Remove-Item -LiteralPath $key -Recurse -Force -ErrorAction SilentlyContinue } }
 }
 
+$script:StoreIds = $null
+function Get-ForgeStoreId {
+    <# Package name → Microsoft Store ProductId from src/data/store-ids.json (best effort). #>
+    param([Parameter(Mandatory)][string]$PackageName)
+    if ($null -eq $script:StoreIds) {
+        $script:StoreIds = @{}
+        $f = Join-Path $script:RootDir 'src/data/store-ids.json'
+        if (Test-Path -LiteralPath $f) { $o = Get-Content -LiteralPath $f -Raw -Encoding UTF8 | ConvertFrom-Json; foreach ($p in $o.PSObject.Properties) { if ($p.Name -ne '_comment') { $script:StoreIds[$p.Name.ToLower()] = $p.Value } } }
+    }
+    $k = $PackageName.ToLower()
+    if ($script:StoreIds.ContainsKey($k)) { return $script:StoreIds[$k] }
+    return $null
+}
+
+function Restore-ForgeAppx {
+    <# Reinstall a package: re-register the still-present manifest, else winget from the Store by ProductId. #>
+    [CmdletBinding()] param([Parameter(Mandatory)][string]$Name, [string]$InstallLocation = '')
+    if ($script:DryRun) { Write-ForgeLog "[dry] reinstall $Name" -Level Info; return $true }
+    if ($InstallLocation -and (Test-Path -LiteralPath (Join-Path $InstallLocation 'AppxManifest.xml'))) {
+        try { Add-AppxPackage -DisableDevelopmentMode -Register (Join-Path $InstallLocation 'AppxManifest.xml') -ErrorAction Stop; Write-ForgeLog "re-registered $Name" -Level Ok; return $true } catch { }
+    }
+    $pid_ = Get-ForgeStoreId $Name
+    if ($pid_ -and (Get-Command winget -ErrorAction SilentlyContinue)) {
+        Write-ForgeLog "reinstalling $Name from Microsoft Store ($pid_)" -Level Info
+        $out = & winget install --id $pid_ --source msstore --silent --accept-source-agreements --accept-package-agreements 2>&1
+        if ($LASTEXITCODE -eq 0) { Write-ForgeLog "reinstalled $Name" -Level Ok; return $true }
+        Write-ForgeLog "winget exit $LASTEXITCODE for $Name : $($out | Select-Object -Last 1)" -Level Warn
+    }
+    if ($pid_) { try { Start-Process "ms-windows-store://pdp/?productid=$pid_" -ErrorAction SilentlyContinue } catch { }; Write-ForgeLog "opened Store page for $Name" -Level Warn }
+    else { Write-ForgeLog "$Name : no Store id known — reinstall manually from Microsoft Store" -Level Warn }
+    return $false
+}
+
 function Restore-AppxEntry {
     param($Entry)
-    if ($Entry.type -eq 'appx' -and $Entry.installLocation -and (Test-Path -LiteralPath (Join-Path $Entry.installLocation 'AppxManifest.xml'))) {
-        try { Add-AppxPackage -DisableDevelopmentMode -Register (Join-Path $Entry.installLocation 'AppxManifest.xml') -ErrorAction Stop; return $true } catch { }
-    }
-    # Fallback: ask winget / store
-    try { Start-Process "ms-windows-store://pdp/?productid=" -ErrorAction SilentlyContinue } catch { }
-    return $false
+    $loc = if ($Entry.PSObject.Properties['installLocation']) { $Entry.installLocation } else { '' }
+    return (Restore-ForgeAppx -Name $Entry.name -InstallLocation $loc)
 }
 
 # ------------------------------------------------------------------ windows optional features / capabilities
@@ -584,7 +615,7 @@ function Restore-ForgeJournal {
                     'service'         { Restore-ServiceEntry  $e }
                     'task'            { Restore-TaskEntry     $e }
                     'appx'            { Restore-AppxEntry     $e | Out-Null }
-                    'appxProvisioned' { Write-ForgeLog "provisioned package $($e.name) cannot be re-provisioned automatically; reinstall from Microsoft Store" -Level Warn }
+                    'appxProvisioned' { if (-not (Get-AppxPackage -AllUsers -Name $e.name -ErrorAction SilentlyContinue)) { Restore-ForgeAppx -Name $e.name | Out-Null } }
                     'feature'         { Restore-FeatureEntry  $e }
                     'command'         { Restore-CommandEntry  $e }
                 }

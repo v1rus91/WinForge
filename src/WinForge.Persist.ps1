@@ -13,15 +13,15 @@ function Get-ForgePersistState {
 }
 
 function Set-ForgePersistState {
-    param([string[]]$Ids, [string]$Profile = '')
-    [PSCustomObject]@{ ids = $Ids; profile = $Profile; updated = (Get-Date -Format o) } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $script:PersistFile -Encoding UTF8
+    param([string[]]$Ids, [string]$Profile = '', [bool]$Apps = $true)
+    [PSCustomObject]@{ ids = $Ids; profile = $Profile; apps = $Apps; updated = (Get-Date -Format o) } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $script:PersistFile -Encoding UTF8
 }
 
 function Register-ForgePersist {
     <# Registers a scheduled task (current user, elevated) that runs `WinForge.ps1 -Reapply -Silent` 2 min after logon and daily. #>
-    param([Parameter(Mandatory)][string[]]$Ids, [string]$Profile = '')
+    param([Parameter(Mandatory)][string[]]$Ids, [string]$Profile = '', [bool]$Apps = $true)
     if ($env:OS -ne 'Windows_NT') { return $false }
-    Set-ForgePersistState -Ids $Ids -Profile $Profile
+    Set-ForgePersistState -Ids $Ids -Profile $Profile -Apps $Apps
     $script = Join-Path (Get-ForgePaths).Root 'WinForge.ps1'
     $arg = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$script`" -Reapply -Silent"
     $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument $arg
@@ -48,10 +48,13 @@ function Test-ForgePersistRegistered {
 }
 
 function Invoke-ForgeReapply {
-    <# Called by the scheduled task: re-apply only tweaks whose live state is no longer 'Applied'. Never removes apps again (they are gone anyway) and never touches advanced-risk tweaks unattended. #>
+    <# Called by the scheduled task: re-apply only tweaks whose live state is no longer 'Applied'.
+       Bloatware sets are re-applied too (Windows re-installs Copilot/Outlook/Teams after feature updates) unless persist.json has apps=false.
+       Advanced-risk tweaks are never touched unattended. #>
     $st = Get-ForgePersistState
     if (-not $st -or -not $st.ids) { Write-ForgeLog 'Persist: nothing configured' -Level Warn; return }
-    $tweaks = Get-ForgeSelectionFromIds -Ids @($st.ids) | Where-Object { $_.risk -ne 'advanced' }
+    $apps = -not ($st.PSObject.Properties['apps'] -and $st.apps -eq $false)
+    $tweaks = Get-ForgeSelectionFromIds -Ids @($st.ids) | Where-Object { $_.risk -ne 'advanced' -and ($apps -or $_.category -ne 'bloatware') }
     $drifted = @()
     foreach ($t in $tweaks) {
         $s = Get-ForgeTweakState -Tweak $t
@@ -59,5 +62,5 @@ function Invoke-ForgeReapply {
     }
     if ($drifted.Count -eq 0) { Write-ForgeLog 'Persist: all tweaks still applied' -Level Ok; return }
     Write-ForgeLog "Persist: $($drifted.Count) tweak(s) drifted, re-applying" -Level Step
-    Invoke-ForgeSession -Tweaks $drifted -Label 'persist' -Profile $st.profile -NoRestorePoint | Out-Null
+    Invoke-ForgeSession -Tweaks $drifted -Label 'persist' -Profile $st.profile -NoRestorePoint -NoReport | Out-Null
 }

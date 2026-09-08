@@ -25,6 +25,12 @@
 .PARAMETER Export        Save the ids selected via -Apply/-Profile to a JSON profile file.
 .PARAMETER Import        Apply a JSON profile file previously exported (or hand-written).
 .PARAMETER Cleanup       Delete temp/caches/update leftovers and report MB freed.
+.PARAMETER Startup       List startup entries (Run keys, Startup folders, Store apps) with their state.
+.PARAMETER DisableStartup Disable startup entries by name (comma separated, wildcards ok). Journaled.
+.PARAMETER EnableStartup  Re-enable startup entries by name.
+.PARAMETER NoReport      Don't generate / open the HTML session report.
+.PARAMETER CheckUpdate   Query GitHub for a newer release and exit.
+.PARAMETER UpdateCatalog Download the latest catalog + profiles from GitHub (validated, old ones backed up).
 .PARAMETER Validate      Validate catalog + profiles and exit (CI).
 .PARAMETER Language      en | uk (defaults to config / system UI culture).
 
@@ -58,6 +64,12 @@ param(
     [string]$Export,
     [string]$Import,
     [switch]$Cleanup,
+    [switch]$Startup,
+    [string[]]$DisableStartup,
+    [string[]]$EnableStartup,
+    [switch]$NoReport,
+    [switch]$CheckUpdate,
+    [switch]$UpdateCatalog,
     [switch]$Validate,
     [ValidateSet('en', 'uk', '')][string]$Language = ''
 )
@@ -72,7 +84,7 @@ function Test-IsAdmin {
     if (-not $IsWinHost) { return $true }
     ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
-$needsAdmin = -not ($List -or $Validate -or $Status -or $DryRun)
+$needsAdmin = -not ($List -or $Validate -or $Status -or $DryRun -or $Startup -or $CheckUpdate)
 if ($IsWinHost -and -not (Test-IsAdmin) -and $needsAdmin) {
     Write-Host 'WinForge needs administrator rights - relaunching elevated...' -ForegroundColor Yellow
     $argList = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$($MyInvocation.MyCommand.Path)`"")
@@ -95,6 +107,9 @@ Import-Module (Join-Path $script:Root 'src\WinForge.Core.psm1')        -Force -D
 Import-Module (Join-Path $script:Root 'src\WinForge.Catalog.psm1')     -Force -DisableNameChecking
 Import-Module (Join-Path $script:Root 'src\WinForge.Diagnostics.psm1') -Force -DisableNameChecking
 Import-Module (Join-Path $script:Root 'src\WinForge.Session.psm1')     -Force -DisableNameChecking
+Import-Module (Join-Path $script:Root 'src\WinForge.Report.psm1')      -Force -DisableNameChecking
+Import-Module (Join-Path $script:Root 'src\WinForge.Startup.psm1')     -Force -DisableNameChecking
+Import-Module (Join-Path $script:Root 'src\WinForge.Update.psm1')      -Force -DisableNameChecking
 . (Join-Path $script:Root 'src\WinForge.Persist.ps1')
 
 $config = Get-ForgeConfig
@@ -115,6 +130,7 @@ function Show-Banner {
     Write-Host '  ╚███╔███╔╝██║██║ ╚████║██║     ╚██████╔╝██║  ██║╚██████╔╝███████╗' -ForegroundColor DarkCyan
     Write-Host '   ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝' -ForegroundColor DarkCyan
     Write-Host ("   v$v  ·  " + (Get-ForgeString 'app.tagline')) -ForegroundColor Gray
+    if ($config.checkUpdates -and -not $Silent) { $u = Test-ForgeUpdate; if ($u -and $u.Available) { Write-Host ('   ' + (Get-ForgeString 'msg.update' @($u.Latest, $u.Url))) -ForegroundColor Yellow } }
     Write-Host ''
 }
 
@@ -176,6 +192,38 @@ if ($Cleanup) {
 
 if ($Reapply) { Invoke-ForgeReapply; exit 0 }
 
+if ($CheckUpdate) {
+    $u = Test-ForgeUpdate -Force
+    if (-not $u) { Write-Host '  Could not reach GitHub.' -ForegroundColor Yellow; exit 2 }
+    if ($u.Available) { Write-Host ('  ' + (Get-ForgeString 'msg.update' @($u.Latest, $u.Url))) -ForegroundColor Yellow; exit 1 }
+    Write-Host "  WinForge $($u.Current) is up to date." -ForegroundColor Green; exit 0
+}
+
+if ($UpdateCatalog) {
+    Show-Banner
+    try { $n = Update-ForgeCatalog; Write-Host "  Catalog updated: $n tweaks" -ForegroundColor Green; exit 0 } catch { Write-Host "  $($_.Exception.Message)" -ForegroundColor Red; exit 1 }
+}
+
+if ($Startup) {
+    Show-Banner
+    $items = Get-ForgeStartupItem
+    foreach ($g in ($items | Group-Object Location)) {
+        Write-Host "  $($g.Name)" -ForegroundColor Cyan
+        foreach ($i in $g.Group) { Write-Host ("    {0} {1,-40} " -f $(if ($i.Enabled) { '●' } else { '○' }), $i.Name) -ForegroundColor $(if ($i.Enabled) { 'White' } else { 'DarkGray' }) -NoNewline; Write-Host $i.Command -ForegroundColor DarkGray }
+    }
+    Write-Host "`n  $($items.Count) entries · ● enabled ○ disabled" -ForegroundColor Gray
+    exit 0
+}
+
+if ($DisableStartup -or $EnableStartup) {
+    $items = Get-ForgeStartupItem
+    New-ForgeJournal -Label 'startup' | Out-Null
+    foreach ($pat in @($DisableStartup)) { foreach ($i in ($items | Where-Object { $_.Name -like $pat -and $_.Enabled })) { Disable-ForgeStartupItem -Item $i } }
+    foreach ($pat in @($EnableStartup))  { foreach ($i in ($items | Where-Object { $_.Name -like $pat -and -not $_.Enabled })) { Enable-ForgeStartupItem -Item $i } }
+    Save-ForgeJournal | Out-Null
+    exit 0
+}
+
 if ($RevertJournal) {
     $journals = @(Get-ForgeJournalList | Where-Object Label -ne 'revert')
     $j = if ($RevertJournal -eq 'last') { $journals | Select-Object -First 1 } else { $journals | Where-Object Id -like "*$RevertJournal*" | Select-Object -First 1 }
@@ -223,8 +271,9 @@ if ($selection.Count) {
         $a = Read-Host ('  ' + (Get-ForgeString 'prompt.confirm' @($selection.Count)))
         if ($a -notmatch '^[yYтТ]') { exit 0 }
     }
-    $res = Invoke-ForgeSession -Tweaks $selection -Label $label -Profile $Profile -NoRestorePoint:($NoRestorePoint -or -not $config.createRestorePoint) -DefaultUser:$DefaultUser
-    if ($Persist -eq 'on') { Register-ForgePersist -Ids @($selection.id) -Profile $Profile | Out-Null }
+    $res = Invoke-ForgeSession -Tweaks $selection -Label $label -Profile $Profile -NoRestorePoint:($NoRestorePoint -or -not $config.createRestorePoint) -DefaultUser:$DefaultUser -NoReport:$NoReport
+    if ($res -and $res.ReportFile -and -not $Silent) { Open-ForgeReport $res.ReportFile }
+    if ($Persist -eq 'on') { Register-ForgePersist -Ids @($selection.id) -Profile $Profile -Apps ([bool]$config.persistApps) | Out-Null }
     elseif ($Persist -eq 'off') { Unregister-ForgePersist }
     $config.lastProfile = $Profile; Save-ForgeConfig $config
     if ($res -and $res.Reboot -and -not $Silent) {

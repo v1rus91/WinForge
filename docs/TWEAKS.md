@@ -1,6 +1,6 @@
 # WinForge tweak catalog
 
-_Generated 2026-09-07 from catalog/*.json — 158 tweaks. Do not edit by hand._
+_Generated 2026-09-08 from catalog/*.json — 158 tweaks. Do not edit by hand._
 
 Legend: **safe** = no functionality loss · **moderate** = read the description · **advanced** = opt-in, never part of a profile, never counted in the score. `⟳` needs reboot · `✖` not reversible (package removal) · `build N+` minimum Windows build.
 

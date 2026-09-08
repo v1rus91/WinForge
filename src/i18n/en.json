@@ -43,5 +43,10 @@
   "gui.selectall": "Select all safe",
   "gui.clear": "Clear",
   "gui.selected": "{0} selected",
-  "gui.log": "Log"
+  "gui.log": "Log",
+  "menu.startup": "Startup manager",
+  "gui.startup": "Startup",
+  "gui.report": "Open report",
+  "msg.update": "Update available: {0} — {1}",
+  "msg.catalogupdated": "Catalog updated: {0} tweaks"
 }

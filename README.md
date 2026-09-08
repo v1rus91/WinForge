@@ -37,6 +37,10 @@ I studied the four most popular open-source tools — [Win11Debloat](https://git
 - **WinForge Score** — three live gauges (Privacy / Performance / Clean) computed from real system state.
 - **8 profiles**: Balanced ★, Privacy Max, Gaming, Gaming Desktop Max, Gaming Laptop, Minimal/Debloat, Developer, Laptop/Battery. Export your own selection as a profile and share it.
 - **Three front-ends**: dark WPF GUI (never freezes — work runs in a background runspace), console TUI, and a fully silent CLI for deployment scripts.
+- **HTML session report** after every run: what changed, previous → new value for every key/service/task, revert command. Opens in the browser.
+- **Startup manager**: Run keys, Startup folders and Store-app StartupTasks with the same enable/disable mechanism Task Manager uses, journaled.
+- **App reinstall** on revert: manifest re-register, else `winget --source msstore` via a package → Store ProductId map.
+- **Catalog updates without a new release** (`-UpdateCatalog`, validated, old copy backed up) and a GitHub release check.
 - **Dry run** for everything, restore point before every session, per-session logs.
 - **App remover** with the full installed/provisioned inventory and "known bloat" markers.
 - **Cleaner** for temp, caches, update leftovers, crash dumps, DO cache, WER, Recycle Bin — sizes shown before you delete.
@@ -69,6 +73,10 @@ irm https://raw.githubusercontent.com/v1rus91/WinForge/main/get.ps1 | iex
 .\WinForge.ps1 -Profile privacy -Export my.json          # save selection as a profile
 .\WinForge.ps1 -Import my.json -Silent
 .\WinForge.ps1 -Cleanup
+.\WinForge.ps1 -Startup                                  # list startup entries
+.\WinForge.ps1 -DisableStartup "Discord*,Steam"          # journaled, -EnableStartup to undo
+.\WinForge.ps1 -CheckUpdate                              # exit 1 when a newer release exists
+.\WinForge.ps1 -UpdateCatalog                            # refresh tweaks/profiles from GitHub main
 .\WinForge.ps1 -Validate                                 # catalog + profiles schema check (CI)
 ```
 
@@ -125,13 +133,17 @@ src/WinForge.Diagnostics  hardware/OS inventory, runtime stats, WinForge Score, 
 src/WinForge.Gui.ps1      WPF, background runspace worker, dispatcher timer
 src/WinForge.Tui.ps1      console menu
 src/WinForge.Persist.ps1  logon watchdog (scheduled task) that re-applies drifted tweaks
+src/WinForge.Report.psm1  HTML session report
+src/WinForge.Startup.psm1 startup manager (StartupApproved / UWP StartupTask)
+src/WinForge.Update.psm1  release check, catalog update
+src/data/store-ids.json   AppX name → Store ProductId for reinstall
 catalog/*.json            14 category files, 158 tweaks
 profiles/*.json           6 profiles (+ yours)
 tests/                    Pester (runs on Linux/macOS too)
 tools/                    Build-Docs, Invoke-Lint, Invoke-Tests
 ```
 
-Data lives in `%ProgramData%\WinForge\` — `logs\`, `journal\` (one JSON per session), `backup\` (.reg exports of deleted keys), `config.json`, `persist.json`.
+Data lives in `%ProgramData%\WinForge\` — `logs\`, `journal\` (one JSON per session), `reports\` (HTML), `backup\` (.reg exports of deleted keys, catalog backups), `config.json`, `persist.json`.
 
 ## Safety model
 
@@ -145,7 +157,7 @@ Data lives in `%ProgramData%\WinForge\` — `logs\`, `journal\` (one JSON per se
 
 ```powershell
 Install-Module Pester, PSScriptAnalyzer -Scope CurrentUser
-./tools/Invoke-Tests.ps1      # 33 tests, cross-platform
+./tools/Invoke-Tests.ps1      # 42 tests, cross-platform
 ./tools/Invoke-Lint.ps1
 ./tools/Build-Docs.ps1        # regenerate docs/TWEAKS.md
 ./WinForge.ps1 -Profile balanced -DryRun -Silent   # on Windows

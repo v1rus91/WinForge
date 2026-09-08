@@ -25,8 +25,36 @@ function Confirm-TuiApply {
     if ($a -notmatch '^[yYтТ]') { return }
     $rp = -not (Get-ForgeDryRun)
     if ($rp) { $b = Read-TuiChoice (Get-ForgeString 'prompt.restorepoint'); $rp = ($b -notmatch '^[nNнН]') }
-    Invoke-ForgeSession -Tweaks $Tweaks -Label $Label -NoRestorePoint:(-not $rp) | Out-Null
-    Read-Host '  Enter ↵' | Out-Null
+    $res = Invoke-ForgeSession -Tweaks $Tweaks -Label $Label -NoRestorePoint:(-not $rp)
+    if ($res -and $res.ReportFile) { $o = Read-TuiChoice ((Get-ForgeString 'gui.report') + '? [Y/n]'); if ($o -notmatch '^[nNнН]') { Open-ForgeReport $res.ReportFile } }
+    else { Read-Host '  Enter ↵' | Out-Null }
+}
+
+function Show-TuiStartup {
+    while ($true) {
+        Write-TuiHeader (Get-ForgeString 'menu.startup')
+        $items = @(Get-ForgeStartupItem)
+        if (-not $items.Count) { Write-Host '   (nothing found)' -ForegroundColor DarkGray; Read-Host '  Enter ↵' | Out-Null; return }
+        $i = 0
+        foreach ($it in $items) {
+            $i++
+            Write-Host ("   {0,2} " -f $i) -NoNewline
+            Write-Host $(if ($it.Enabled) { '●' } else { '○' }) -NoNewline -ForegroundColor $(if ($it.Enabled) { 'Green' } else { 'DarkGray' })
+            Write-Host (" {0,-34} {1,-26} " -f $it.Name, $it.Location) -NoNewline -ForegroundColor White
+            $c = $it.Command; if ($c.Length -gt 60) { $c = $c.Substring(0, 60) + '…' }
+            Write-Host $c -ForegroundColor DarkGray
+        }
+        Write-Host ''
+        Write-Host '   #  toggle entry     b) back' -ForegroundColor DarkGray
+        $c = Read-TuiChoice
+        if ($c -eq 'b' -or $c -eq '') { return }
+        if ($c -match '^\d+$' -and [int]$c -ge 1 -and [int]$c -le $items.Count) {
+            $it = $items[[int]$c - 1]
+            New-ForgeJournal -Label 'startup' | Out-Null
+            Set-ForgeStartupItem -Item $it -Enabled (-not $it.Enabled)
+            Save-ForgeJournal | Out-Null
+        }
+    }
 }
 
 function Show-TuiProfiles {
@@ -177,6 +205,8 @@ function Show-TuiSettings {
         Write-Host ("   3) Dry run (this session)   : {0}" -f (Get-ForgeDryRun))
         Write-Host ("   4) Persist watchdog     : {0}" -f (Test-ForgePersistRegistered))
         Write-Host ("   5) Open logs folder")
+        Write-Host ("   6) Check for updates")
+        Write-Host ("   7) Update catalog from GitHub")
         Write-Host '    b) ← back' -ForegroundColor DarkGray
         $c = Read-TuiChoice
         switch ($c) {
@@ -185,6 +215,8 @@ function Show-TuiSettings {
             '3' { Set-ForgeDryRun (-not (Get-ForgeDryRun)) }
             '4' { if (Test-ForgePersistRegistered) { Unregister-ForgePersist } else { $st = Get-ForgePersistState; if ($st -and $st.ids) { Register-ForgePersist -Ids @($st.ids) -Profile $st.profile | Out-Null } else { Write-Host '   Apply a profile with -Persist on first.' -ForegroundColor Yellow } } }
             '5' { if ($env:OS -eq 'Windows_NT') { Start-Process explorer.exe (Get-ForgePaths).Logs } else { Write-Host (Get-ForgePaths).Logs } }
+            '6' { $u = Test-ForgeUpdate -Force; if (-not $u) { Write-Host '   offline' -ForegroundColor Yellow } elseif ($u.Available) { Write-Host ('   ' + (Get-ForgeString 'msg.update' @($u.Latest, $u.Url))) -ForegroundColor Yellow } else { Write-Host "   up to date ($($u.Current))" -ForegroundColor Green }; Read-Host '  Enter ↵' | Out-Null }
+            '7' { try { $n = Update-ForgeCatalog; Write-Host ('   ' + (Get-ForgeString 'msg.catalogupdated' @($n))) -ForegroundColor Green } catch { Write-Host "   $($_.Exception.Message)" -ForegroundColor Red }; Read-Host '  Enter ↵' | Out-Null }
             default { return }
         }
     }
@@ -196,7 +228,7 @@ function Start-ForgeTui {
         $items = @(
             @{ k = '1'; s = 'menu.profile' }, @{ k = '2'; s = 'menu.browse' }, @{ k = '3'; s = 'menu.search' },
             @{ k = '4'; s = 'menu.status' }, @{ k = '5'; s = 'menu.revert' }, @{ k = '6'; s = 'menu.cleanup' },
-            @{ k = '7'; s = 'menu.gui' }, @{ k = '8'; s = 'menu.settings' }, @{ k = 'q'; s = 'menu.exit' }
+            @{ k = '7'; s = 'menu.startup' }, @{ k = '8'; s = 'menu.gui' }, @{ k = '9'; s = 'menu.settings' }, @{ k = 'q'; s = 'menu.exit' }
         )
         foreach ($it in $items) { Write-Host ("   {0}) {1}" -f $it.k, (Get-ForgeString $it.s)) -ForegroundColor White }
         if (Get-ForgeDryRun) { Write-Host ('   ' + (Get-ForgeString 'msg.dryrun')) -ForegroundColor Yellow }
@@ -208,8 +240,9 @@ function Start-ForgeTui {
             '4' { Show-TuiStatus }
             '5' { Show-TuiJournals }
             '6' { Get-ForgeCleanupTargets | Format-Table Name, MB -AutoSize | Out-Host; $a = Read-TuiChoice 'Clean all? [y/N]'; if ($a -match '^[yY]') { $mb = Invoke-ForgeCleanup; Write-Host "  Freed ~$mb MB" -ForegroundColor Green; Read-Host '  Enter ↵' | Out-Null } }
-            '7' { if ($env:OS -eq 'Windows_NT') { . (Join-Path (Get-ForgePaths).Root 'src\WinForge.Gui.ps1'); Start-ForgeGui } else { Write-Host '  GUI requires Windows.' -ForegroundColor Yellow } }
-            '8' { Show-TuiSettings }
+            '7' { Show-TuiStartup }
+            '8' { if ($env:OS -eq 'Windows_NT') { . (Join-Path (Get-ForgePaths).Root 'src\WinForge.Gui.ps1'); Start-ForgeGui } else { Write-Host '  GUI requires Windows.' -ForegroundColor Yellow } }
+            '9' { Show-TuiSettings }
             'q' { return }
             default { }
         }

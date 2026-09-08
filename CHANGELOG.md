@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.0 — 2026-09-08
+- **HTML session report** (`%ProgramData%\WinForge\reports`) with before/after values and the revert command; opens after every session (`-NoReport` / setting to disable).
+- **Startup manager**: CLI `-Startup`, `-DisableStartup`, `-EnableStartup`; TUI page; GUI page. Uses StartupApproved / UWP StartupTask, journaled.
+- **Persist** now re-removes bloatware that Windows re-installs after feature updates (`persistApps` setting).
+- **App reinstall on revert** via `src/data/store-ids.json` + `winget --source msstore`; provisioned packages are reinstalled too.
+- **Updates**: `-CheckUpdate`, `-UpdateCatalog` (downloads catalog/profiles from main, validates, backs up); GUI banner and buttons.
+- CI: real apply → verify → revert job on windows-latest (workflow file pending push).
+
 ## 1.2.1 — 2026-09-07
 - Fix: Persist watchdog now runs as the interactive user (elevated) instead of SYSTEM, so HKCU tweaks are re-applied to the right profile.
 - Fix: reverting a journal that touched the Default-user hive mounts/unmounts the hive.

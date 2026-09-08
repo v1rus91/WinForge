@@ -293,6 +293,25 @@ $script:Xaml = @'
           </ListView>
         </DockPanel>
 
+        <!-- Startup -->
+        <DockPanel Name="PageStartup" Visibility="Collapsed">
+          <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
+            <Button Name="BtnStartupRefresh" Content="Refresh"/>
+            <Button Name="BtnStartupDisable" Content="Disable selected" Style="{StaticResource Danger}" Margin="8,0,0,0"/>
+            <Button Name="BtnStartupEnable" Content="Enable selected" Margin="8,0,0,0"/>
+            <TextBlock Name="LblStartupInfo" Foreground="{StaticResource Muted}" Margin="18,0,0,0" VerticalAlignment="Center"/>
+          </StackPanel>
+          <ListView Name="ListStartup">
+            <ListView.View><GridView>
+              <GridViewColumn Width="34"><GridViewColumn.CellTemplate><DataTemplate><CheckBox IsChecked="{Binding Selected, Mode=TwoWay}"/></DataTemplate></GridViewColumn.CellTemplate></GridViewColumn>
+              <GridViewColumn Header="State" Width="70" DisplayMemberBinding="{Binding StateText}"/>
+              <GridViewColumn Header="Name" Width="240" DisplayMemberBinding="{Binding Name}"/>
+              <GridViewColumn Header="Location" Width="170" DisplayMemberBinding="{Binding Location}"/>
+              <GridViewColumn Header="Command" Width="480" DisplayMemberBinding="{Binding Command}"/>
+            </GridView></ListView.View>
+          </ListView>
+        </DockPanel>
+
         <!-- Journal -->
         <DockPanel Name="PageJournal" Visibility="Collapsed">
           <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
@@ -321,6 +340,8 @@ $script:Xaml = @'
                 <CheckBox Name="ChkRestore" Content="Create a restore point before applying" Margin="0,0,0,8"/>
                 <CheckBox Name="ChkDefaultUser" Content="Also apply user tweaks to the Default profile (new accounts / sysprep)" Margin="0,0,0,8"/>
                 <CheckBox Name="ChkPersist" Content="Persist: re-apply my tweaks after Windows updates (logon watchdog)" Margin="0,0,0,8"/>
+                <CheckBox Name="ChkPersistApps" Content="Persist also re-removes bloatware that Windows re-installs" Margin="22,0,0,8"/>
+                <CheckBox Name="ChkOpenReport" Content="Open the HTML report after every session" Margin="0,0,0,8"/>
               </StackPanel>
             </Border>
             <Border Background="{StaticResource Card}" BorderBrush="{StaticResource Border}" BorderThickness="1" CornerRadius="12" Padding="18" Margin="0,0,0,12">
@@ -330,6 +351,11 @@ $script:Xaml = @'
                   <Button Name="BtnOpenLogs" Content="Open logs"/>
                   <Button Name="BtnExport" Content="Export selection as profile…" Margin="8,0,0,0"/>
                   <Button Name="BtnImport" Content="Import profile…" Margin="8,0,0,0"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                  <Button Name="BtnCheckUpdate" Content="Check for updates"/>
+                  <Button Name="BtnUpdateCatalog" Content="Update catalog from GitHub" Margin="8,0,0,0"/>
+                  <TextBlock Name="LblUpdate" Foreground="{StaticResource Yellow}" Margin="14,0,0,0" VerticalAlignment="Center"/>
                 </StackPanel>
               </StackPanel>
             </Border>
@@ -356,6 +382,7 @@ $script:Xaml = @'
             <ProgressBar Name="BarBusy" Width="180" Margin="12,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/>
           </StackPanel>
           <StackPanel Grid.Column="1" Orientation="Horizontal">
+            <Button Name="BtnReport" Content="Open report" Visibility="Collapsed" Margin="0,0,8,0"/>
             <Button Name="BtnLog" Content="Log ▾"/>
             <Button Name="BtnRevert" Content="Revert selected" Style="{StaticResource Danger}" Margin="8,0,0,0"/>
             <Button Name="BtnApply" Content="Apply selected" Style="{StaticResource Primary}" Margin="8,0,0,0" MinWidth="150"/>
@@ -412,6 +439,9 @@ function Start-ForgeGui {
                 Import-Module (Join-Path $Root 'src\WinForge.Catalog.psm1') -Force -DisableNameChecking
                 Import-Module (Join-Path $Root 'src\WinForge.Diagnostics.psm1') -Force -DisableNameChecking
                 Import-Module (Join-Path $Root 'src\WinForge.Session.psm1') -Force -DisableNameChecking
+                Import-Module (Join-Path $Root 'src\WinForge.Report.psm1') -Force -DisableNameChecking
+                Import-Module (Join-Path $Root 'src\WinForge.Startup.psm1') -Force -DisableNameChecking
+                Import-Module (Join-Path $Root 'src\WinForge.Update.psm1') -Force -DisableNameChecking
                 . (Join-Path $Root 'src\WinForge.Persist.ps1')
                 Set-ForgeLanguage $WfArgs.Lang; Set-ForgeDryRun ([bool]$WfArgs.DryRun); Set-ForgeQuiet $true
                 Initialize-ForgeLog -Name 'gui' | Out-Null
@@ -426,7 +456,7 @@ function Start-ForgeGui {
                     'apply' {
                         $sel = Get-ForgeSelectionFromIds -Ids $WfArgs.Ids
                         $r = Invoke-ForgeSession -Tweaks $sel -Label $WfArgs.Label -Profile $WfArgs.Profile -NoRestorePoint:(-not $WfArgs.RestorePoint) -DefaultUser:([bool]$WfArgs.DefaultUser) -Progress { param($i, $n, $t) $Sync.Progress = [int]($i * 100 / $n) }
-                        if ($WfArgs.Persist) { Register-ForgePersist -Ids @($sel.id) -Profile $WfArgs.Profile | Out-Null }
+                        if ($WfArgs.Persist) { Register-ForgePersist -Ids @($sel.id) -Profile $WfArgs.Profile -Apps ([bool]$WfArgs.PersistApps) | Out-Null }
                         foreach ($t in $sel) { $Sync.States[$t.id] = Get-ForgeTweakState -Tweak $t }
                         $Sync.Result = $r
                     }
@@ -447,6 +477,16 @@ function Start-ForgeGui {
                     'cleanscan' { $Sync.Result = @(Get-ForgeCleanupTargets) }
                     'clean' { $mb = Invoke-ForgeCleanup -Ids $WfArgs.Ids; Write-ForgeLog "Freed ~$mb MB" -Level Ok; $Sync.Result = @(Get-ForgeCleanupTargets) }
                     'sysinfo' { $Sync.Result = Get-ForgeHealthReport -SkipScore }
+                    'startup' { $Sync.Result = @(Get-ForgeStartupItem) }
+                    'startupset' {
+                        New-ForgeJournal -Label 'startup' | Out-Null
+                        $all = @(Get-ForgeStartupItem)
+                        foreach ($key in $WfArgs.Keys) { $it = $all | Where-Object { "$($_.Location)|$($_.Name)" -eq $key } | Select-Object -First 1; if ($it) { Set-ForgeStartupItem -Item $it -Enabled ([bool]$WfArgs.Enable) } }
+                        Save-ForgeJournal | Out-Null
+                        $Sync.Result = @(Get-ForgeStartupItem)
+                    }
+                    'checkupdate' { $Sync.Result = Test-ForgeUpdate -Force }
+                    'updatecatalog' { $Sync.Result = Update-ForgeCatalog }
                 }
             } catch { $Sync.Log.Enqueue("[Error] $($_.Exception.Message)`n$($_.ScriptStackTrace)") }
             finally { $Sync.Done = $true }
@@ -513,12 +553,13 @@ function Start-ForgeGui {
     function Show-Page {
         param([string]$Page)
         $script:CurrentPage = $Page
-        foreach ($p in 'PageDashboard', 'PageTweaks', 'PageProfiles', 'PageApps', 'PageCleaner', 'PageJournal', 'PageSettings') { $ui[$p].Visibility = 'Collapsed' }
+        foreach ($p in 'PageDashboard', 'PageTweaks', 'PageProfiles', 'PageApps', 'PageCleaner', 'PageStartup', 'PageJournal', 'PageSettings') { $ui[$p].Visibility = 'Collapsed' }
         switch ($Page) {
             'dashboard' { $ui.PageDashboard.Visibility = 'Visible'; $ui.LblPage.Text = Get-ForgeString 'gui.dashboard'; $ui.LblPageSub.Text = '' }
             'profiles'  { $ui.PageProfiles.Visibility = 'Visible'; $ui.LblPage.Text = Get-ForgeString 'gui.profiles'; $ui.LblPageSub.Text = '' }
             'apps'      { $ui.PageApps.Visibility = 'Visible'; $ui.LblPage.Text = Get-ForgeString 'gui.apps'; $ui.LblPageSub.Text = ''; if (-not $ui.ListApps.ItemsSource) { Start-Worker 'apps' @{ Lang = $cfg.language } } }
             'cleaner'   { $ui.PageCleaner.Visibility = 'Visible'; $ui.LblPage.Text = Get-ForgeString 'gui.cleaner'; $ui.LblPageSub.Text = ''; if (-not $ui.ListClean.ItemsSource) { Start-Worker 'cleanscan' @{ Lang = $cfg.language } } }
+            'startup'   { $ui.PageStartup.Visibility = 'Visible'; $ui.LblPage.Text = Get-ForgeString 'gui.startup'; $ui.LblPageSub.Text = ''; if (-not $ui.ListStartup.ItemsSource) { Start-Worker 'startup' @{ Lang = $cfg.language } } }
             'journal'   { $ui.PageJournal.Visibility = 'Visible'; $ui.LblPage.Text = Get-ForgeString 'gui.journal'; $ui.LblPageSub.Text = ''; Update-Journal }
             'settings'  { $ui.PageSettings.Visibility = 'Visible'; $ui.LblPage.Text = Get-ForgeString 'gui.settings'; $ui.LblPageSub.Text = '' }
             'preview'   { $ui.PageTweaks.Visibility = 'Visible'; $script:CurrentCategory = '' }
@@ -573,6 +614,7 @@ function Start-ForgeGui {
     foreach ($k in $cats.Keys) { $navItems.Add([PSCustomObject]@{ Key = $k; Icon = $cats[$k].icon; Title = $k; Count = "$(@($catalog | Where-Object category -eq $k).Count)" }) }
     $navItems.Add([PSCustomObject]@{ Key = 'apps'; Icon = '📦'; Title = (Get-ForgeString 'gui.apps'); Count = '' })
     $navItems.Add([PSCustomObject]@{ Key = 'cleaner'; Icon = '🧽'; Title = (Get-ForgeString 'gui.cleaner'); Count = '' })
+    $navItems.Add([PSCustomObject]@{ Key = 'startup'; Icon = '🚀'; Title = (Get-ForgeString 'gui.startup'); Count = '' })
     $navItems.Add([PSCustomObject]@{ Key = 'journal'; Icon = '↩️'; Title = (Get-ForgeString 'gui.journal'); Count = '' })
     $navItems.Add([PSCustomObject]@{ Key = 'settings'; Icon = '⚙️'; Title = (Get-ForgeString 'gui.settings'); Count = '' })
     $ui.Nav.ItemsSource = $navItems
@@ -605,7 +647,7 @@ function Start-ForgeGui {
         $r = [Windows.MessageBox]::Show($w, $msg, 'WinForge', 'OKCancel', $(if ($risky) { 'Warning' } else { 'Question' }))
         if ($r -ne 'OK') { return }
         $ui.TxtLog.Visibility = 'Visible'
-        Start-Worker 'apply' @{ Ids = $ids; Label = $Label; Profile = $Profile; Lang = $cfg.language; DryRun = [bool]$ui.ChkDryRun.IsChecked; RestorePoint = [bool]$ui.ChkRestore.IsChecked; DefaultUser = [bool]$ui.ChkDefaultUser.IsChecked; Persist = [bool]$ui.ChkPersist.IsChecked }
+        Start-Worker 'apply' @{ Ids = $ids; Label = $Label; Profile = $Profile; Lang = $cfg.language; DryRun = [bool]$ui.ChkDryRun.IsChecked; RestorePoint = [bool]$ui.ChkRestore.IsChecked; DefaultUser = [bool]$ui.ChkDefaultUser.IsChecked; Persist = [bool]$ui.ChkPersist.IsChecked; PersistApps = [bool]$ui.ChkPersistApps.IsChecked }
     }
     $ui.BtnApply.Add_Click({ Invoke-ApplySelected })
     $ui.BtnRevert.Add_Click({
@@ -656,6 +698,22 @@ function Start-ForgeGui {
     $ui.BtnCleanScan.Add_Click({ Start-Worker 'cleanscan' @{ Lang = $cfg.language } })
     $ui.BtnCleanRun.Add_Click({ $ids = @($ui.ListClean.ItemsSource | Where-Object Selected | ForEach-Object Id); if ($ids.Count) { $ui.TxtLog.Visibility = 'Visible'; Start-Worker 'clean' @{ Ids = $ids; Lang = $cfg.language; DryRun = [bool]$ui.ChkDryRun.IsChecked } } })
 
+    # ---------------- startup
+    function Update-Startup { param($items) $ui.ListStartup.ItemsSource = @($items | ForEach-Object { [PSCustomObject]@{ Selected = $false; Key = "$($_.Location)|$($_.Name)"; StateText = $(if ($_.Enabled) { '● on' } else { '○ off' }); Name = $_.Name; Location = $_.Location; Command = $_.Command; Enabled = $_.Enabled } }); $ui.LblStartupInfo.Text = "$(@($items | Where-Object Enabled).Count) enabled of $(@($items).Count)" }
+    $ui.BtnStartupRefresh.Add_Click({ Start-Worker 'startup' @{ Lang = $cfg.language } })
+    $ui.BtnStartupDisable.Add_Click({ $keys = @($ui.ListStartup.ItemsSource | Where-Object { $_.Selected -and $_.Enabled } | ForEach-Object Key); if ($keys.Count) { $ui.TxtLog.Visibility = 'Visible'; Start-Worker 'startupset' @{ Keys = $keys; Enable = $false; Lang = $cfg.language; DryRun = [bool]$ui.ChkDryRun.IsChecked } } })
+    $ui.BtnStartupEnable.Add_Click({ $keys = @($ui.ListStartup.ItemsSource | Where-Object { $_.Selected -and -not $_.Enabled } | ForEach-Object Key); if ($keys.Count) { $ui.TxtLog.Visibility = 'Visible'; Start-Worker 'startupset' @{ Keys = $keys; Enable = $true; Lang = $cfg.language; DryRun = [bool]$ui.ChkDryRun.IsChecked } } })
+
+    # ---------------- updates / report
+    $script:LastReport = $null
+    $ui.BtnReport.Add_Click({ if ($script:LastReport) { Open-ForgeReport $script:LastReport } })
+    $ui.BtnCheckUpdate.Add_Click({ Start-Worker 'checkupdate' @{ Lang = $cfg.language } })
+    $ui.BtnUpdateCatalog.Add_Click({ if ([Windows.MessageBox]::Show($w, 'Download the latest catalog and profiles from GitHub? Local copies are backed up. WinForge must be restarted afterwards.', 'WinForge', 'OKCancel', 'Question') -eq 'OK') { $ui.TxtLog.Visibility = 'Visible'; Start-Worker 'updatecatalog' @{ Lang = $cfg.language } } })
+    $ui.ChkPersistApps.IsChecked = -not ($cfg.PSObject.Properties['persistApps'] -and $cfg.persistApps -eq $false)
+    $ui.ChkOpenReport.IsChecked = -not ($cfg.PSObject.Properties['openReport'] -and $cfg.openReport -eq $false)
+    $ui.ChkPersistApps.Add_Click({ $cfg | Add-Member -NotePropertyName persistApps -NotePropertyValue ([bool]$ui.ChkPersistApps.IsChecked) -Force; Save-ForgeConfig $cfg; $st = Get-ForgePersistState; if ($st -and $st.ids) { Set-ForgePersistState -Ids @($st.ids) -Profile $st.profile -Apps ([bool]$ui.ChkPersistApps.IsChecked) } })
+    $ui.ChkOpenReport.Add_Click({ $cfg | Add-Member -NotePropertyName openReport -NotePropertyValue ([bool]$ui.ChkOpenReport.IsChecked) -Force; Save-ForgeConfig $cfg })
+
     # ---------------- journal
     $ui.BtnJournalRefresh.Add_Click({ Update-Journal })
     $ui.BtnJournalOpen.Add_Click({ Start-Process explorer.exe (Get-ForgePaths).Journal })
@@ -703,6 +761,7 @@ function Start-ForgeGui {
             switch ($task) {
                 'scan'   { Update-VmStates; Update-Score $sync.Result; Update-TweakList; $ui.LblBusy.Text = '' }
                 'apply'  { Update-VmStates; foreach ($vm in $script:Vm.Values) { $vm.Selected = $false }; Update-TweakList; $r = $sync.Result
+                           if ($r -and $r.ReportFile) { $script:LastReport = $r.ReportFile; $ui.BtnReport.Visibility = 'Visible'; if ($ui.ChkOpenReport.IsChecked) { Open-ForgeReport $r.ReportFile } }
                            if ($r) { $ui.LblBusy.Text = (Get-ForgeString 'msg.done' @($r.Applied, $r.Skipped, $r.Failed)); if ($r.Reboot -and -not $ui.ChkDryRun.IsChecked) { if ([Windows.MessageBox]::Show($w, (Get-ForgeString 'msg.reboot') + "`n`nReboot now?", 'WinForge', 'YesNo', 'Question') -eq 'Yes') { Restart-Computer -Force } } }
                            Start-Worker 'scan' @{ Lang = $cfg.language } }
                 'revert' { Update-VmStates; foreach ($vm in $script:Vm.Values) { $vm.Selected = $false }; Update-TweakList; Start-Worker 'scan' @{ Lang = $cfg.language } }
@@ -712,6 +771,10 @@ function Start-ForgeGui {
                 'cleanscan' { Update-Clean $sync.Result }
                 'clean'  { Update-Clean $sync.Result }
                 'sysinfo' { Update-SysInfo $sync.Result; Start-Worker 'scan' @{ Lang = $cfg.language } }
+                'startup' { Update-Startup $sync.Result }
+                'startupset' { Update-Startup $sync.Result }
+                'checkupdate' { $u = $sync.Result; $ui.LblUpdate.Text = $(if (-not $u) { 'offline' } elseif ($u.Available) { (Get-ForgeString 'msg.update' @($u.Latest, $u.Url)) } else { "up to date ($($u.Current))" }); if ($u -and $u.Available) { $ui.LblVersion.Text = "v$((Get-ForgePaths).Version) · ⬆ $($u.Latest)" } }
+                'updatecatalog' { if ($sync.Result) { [Windows.MessageBox]::Show($w, (Get-ForgeString 'msg.catalogupdated' @($sync.Result)) + "`nRestart WinForge to load it.", 'WinForge') | Out-Null } }
                 default  { }
             }
             Update-SelectedCount
@@ -726,7 +789,7 @@ function Start-ForgeGui {
     $ui.LblScore.Text = '…'; $ui.LblScorePrivacy.Text = '…'; $ui.LblScorePerf.Text = '…'; $ui.LblScoreBloat.Text = '…'
     $ui.LblSysInfo.Text = 'collecting…'
     Show-Page 'dashboard'; $ui.Nav.SelectedIndex = 0
-    $w.Add_Loaded({ $timer.Start(); Start-Worker 'sysinfo' @{ Lang = $cfg.language } })
+    $w.Add_Loaded({ $timer.Start(); Start-Worker 'sysinfo' @{ Lang = $cfg.language }; if ($cfg.checkUpdates) { try { $u = Test-ForgeUpdate; if ($u -and $u.Available) { $ui.LblVersion.Text = "v$((Get-ForgePaths).Version) · ⬆ $($u.Latest) available" } } catch { } } })
     $w.Add_Closing({ param($s, $e) if ($sync.Busy) { if ([Windows.MessageBox]::Show($w, 'An operation is still running. Quit anyway?', 'WinForge', 'YesNo', 'Warning') -ne 'Yes') { $e.Cancel = $true } } })
     [void]$w.ShowDialog()
 }

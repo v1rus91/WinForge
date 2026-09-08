@@ -17,6 +17,7 @@ function Invoke-ForgeSession {
         [string]$Profile = '',
         [switch]$NoRestorePoint,
         [switch]$DefaultUser,
+        [switch]$NoReport,
         [scriptblock]$Progress = $null
     )
     if ($Tweaks.Count -eq 0) { Write-ForgeLog 'Nothing to apply' -Level Warn; return $null }
@@ -35,8 +36,15 @@ function Invoke-ForgeSession {
         [void]$results.Add($r)
     }
     Dismount-DefaultUserHive
+    $journal = Get-ForgeJournal
     $file = Save-ForgeJournal
     if (Test-ForgeExplorerRestartNeeded) { Restart-ForgeExplorer }
+    $after = @{}
+    if (-not (Get-ForgeDryRun)) { foreach ($t in $Tweaks) { if ($t.category -ne 'bloatware') { try { $after[$t.id] = Get-ForgeTweakState -Tweak $t } catch { } } } }
+    $report = $null
+    if (-not $NoReport -and (Get-Command Export-ForgeReport -ErrorAction SilentlyContinue)) {
+        try { $report = Export-ForgeReport -Journal $journal -Results $results.ToArray() -Tweaks $Tweaks -StatesAfter $after } catch { Write-ForgeLog "report failed: $($_.Exception.Message)" -Level Warn }
+    }
 
     $applied = @($results | Where-Object Status -eq 'Applied').Count
     $skipped = @($results | Where-Object Status -eq 'Skipped').Count
@@ -45,7 +53,8 @@ function Invoke-ForgeSession {
     Write-ForgeLog (Get-ForgeString 'msg.done' @($applied, $skipped, $failed)) -Level Ok
     if ($reboot) { Write-ForgeLog (Get-ForgeString 'msg.reboot') -Level Warn }
     if ($file) { Write-ForgeLog "Journal: $file" -Level Info }
-    [PSCustomObject]@{ Applied = $applied; Skipped = $skipped; Failed = $failed; Reboot = $reboot; JournalFile = $file; Results = $results.ToArray() }
+    if ($report) { Write-ForgeLog "Report: $report" -Level Info }
+    [PSCustomObject]@{ Applied = $applied; Skipped = $skipped; Failed = $failed; Reboot = $reboot; JournalFile = $file; ReportFile = $report; Results = $results.ToArray() }
 }
 
 function Invoke-ForgeRevertSession {
